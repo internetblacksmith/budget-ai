@@ -1,0 +1,107 @@
+#!/usr/bin/env ruby
+
+# Find potentially untested code in the application
+require 'pathname'
+
+puts "🔍 Finding potentially untested code..."
+puts "=" * 50
+
+# Directories to check
+app_dirs = %w[app/models app/controllers app/services app/jobs]
+test_dirs = %w[spec features]
+
+# Find all Ruby files in app directories
+app_files = {}
+app_dirs.each do |dir|
+  Dir.glob("#{dir}/**/*.rb").each do |file|
+    # Get the class/module name from the file
+    content = File.read(file)
+    
+    # Extract class/module names
+    classes = content.scan(/(?:class|module)\s+(\w+)/).flatten
+    
+    classes.each do |class_name|
+      app_files[class_name] ||= []
+      app_files[class_name] << file
+    end
+  end
+end
+
+# Find all test files
+tested_classes = {}
+test_dirs.each do |dir|
+  Dir.glob("#{dir}/**/*.rb").each do |file|
+    content = File.read(file)
+    
+    # Look for describes, contexts, or direct class references
+    described_classes = content.scan(/describe\s+['"]?(\w+)['"]?/).flatten
+    described_classes += content.scan(/RSpec.describe\s+(\w+)/).flatten
+    
+    # Also look for direct class usage in tests
+    app_files.keys.each do |class_name|
+      if content.include?(class_name)
+        tested_classes[class_name] = true
+      end
+    end
+    
+    described_classes.each do |class_name|
+      tested_classes[class_name] = true
+    end
+  end
+end
+
+# Find untested classes
+untested = []
+partially_tested = []
+
+app_files.each do |class_name, files|
+  unless tested_classes[class_name]
+    untested << { class: class_name, files: files }
+  end
+end
+
+# Report results
+if untested.empty?
+  puts "✅ All classes appear to have test coverage!"
+else
+  puts "\n⚠️  Potentially untested classes:"
+  untested.each do |item|
+    puts "\n   #{item[:class]}:"
+    item[:files].each do |file|
+      puts "      #{file}"
+    end
+  end
+end
+
+# Check for files without any classes (utility files)
+puts "\n📁 Checking for utility files without tests..."
+
+Dir.glob("app/**/*.rb").each do |file|
+  next if file.include?('application_') # Skip base classes
+  
+  content = File.read(file)
+  
+  # Skip if it defines a class or module
+  next if content =~ /^\s*(class|module)\s+/
+  
+  # Check if there's a corresponding test
+  test_file = file.gsub('app/', 'spec/').gsub('.rb', '_spec.rb')
+  
+  unless File.exist?(test_file)
+    puts "   ⚠️  #{file} (no spec file found)"
+  end
+end
+
+# Summary
+puts "\n" + "=" * 50
+puts "📊 Summary:"
+puts "   Total classes found: #{app_files.keys.count}"
+puts "   Classes with tests: #{tested_classes.keys.count}"
+puts "   Potentially untested: #{untested.count}"
+
+coverage_percent = (tested_classes.keys.count.to_f / app_files.keys.count * 100).round(2)
+puts "   Estimated class coverage: #{coverage_percent}%"
+
+if untested.count > 0
+  puts "\n💡 Recommendation: Add tests for the untested classes listed above."
+end

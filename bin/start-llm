@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+
+# Budget AI - Local LLM Starter Script
+# This script helps you start Ollama for use with Budget AI
+
+set -e
+
+echo "🤖 Budget AI - Local LLM Setup"
+echo "=============================="
+echo ""
+
+# Check if Ollama is installed
+if ! command -v ollama &> /dev/null; then
+    echo "❌ Ollama is not installed!"
+    echo ""
+    echo "To install Ollama:"
+    echo ""
+    echo "On Linux:"
+    echo "  curl -fsSL https://ollama.com/install.sh | sh"
+    echo ""
+    echo "On Windows:"
+    echo "  Download from https://ollama.com/download/windows"
+    echo ""
+    exit 1
+fi
+
+echo "✅ Ollama is installed"
+
+# Check if Ollama is running
+if curl -s http://localhost:11434 > /dev/null 2>&1; then
+    echo "✅ Ollama is already running"
+else
+    echo "🚀 Starting Ollama..."
+    # Start Ollama in the background
+    ollama serve > /dev/null 2>&1 &
+    
+    # Wait for Ollama to start
+    echo -n "Waiting for Ollama to start"
+    for i in {1..30}; do
+        if curl -s http://localhost:11434 > /dev/null 2>&1; then
+            echo ""
+            echo "✅ Ollama started successfully"
+            break
+        fi
+        echo -n "."
+        sleep 1
+    done
+    
+    if ! curl -s http://localhost:11434 > /dev/null 2>&1; then
+        echo ""
+        echo "❌ Failed to start Ollama"
+        exit 1
+    fi
+fi
+
+# Check available models
+echo ""
+echo "📦 Available models:"
+ollama list
+
+# Check if llama2 is installed
+if ! ollama list | grep -q "llama2"; then
+    echo ""
+    echo "⚠️  llama2 model not found!"
+    echo ""
+    read -p "Would you like to download llama2? (recommended) [Y/n] " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
+        echo "📥 Downloading llama2... (this may take a few minutes)"
+        ollama pull llama2
+        echo "✅ llama2 downloaded successfully"
+    else
+        echo ""
+        echo "ℹ️  You can download other models with:"
+        echo "  ollama pull mistral    # Smaller, faster"
+        echo "  ollama pull mixtral    # More capable"
+        echo "  ollama pull codellama  # Good for code"
+        echo ""
+        echo "Don't forget to update LLM_MODEL in .env.development"
+    fi
+fi
+
+# Test the model
+echo ""
+echo "🧪 Testing LLM..."
+if ollama run llama2 "Say 'Budget AI is ready!' in 10 words or less" 2>/dev/null | grep -q "Budget AI"; then
+    echo "✅ LLM is working!"
+else
+    echo "⚠️  LLM test didn't return expected response, but it might still work"
+fi
+
+echo ""
+echo "🎉 Your local LLM is ready to use!"
+echo ""
+echo "Next steps:"
+echo "1. Make sure your .env.development has:"
+echo "   LLM_HOST=localhost"
+echo "   LLM_PORT=11434"
+echo "   LLM_MODEL=llama2"
+echo ""
+echo "2. Start Budget AI:"
+echo "   make server"
+echo ""
+echo "3. Visit http://localhost:3000/insights"
+echo ""
+echo "Enjoy AI-powered budget insights! 🚀"

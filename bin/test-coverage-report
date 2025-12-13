@@ -1,0 +1,114 @@
+#!/usr/bin/env ruby
+
+# Generate comprehensive test coverage report
+require 'json'
+require 'fileutils'
+
+puts "🧪 Budget AI Test Coverage Report"
+puts "=" * 50
+
+# Run RSpec tests with coverage
+puts "\n📊 Running RSpec tests with coverage..."
+rspec_output = `COVERAGE=true bundle exec rspec --format json --out tmp/rspec_results.json 2>&1`
+rspec_exit_code = $?.exitstatus
+
+# Parse RSpec results
+if File.exist?('tmp/rspec_results.json')
+  rspec_results = JSON.parse(File.read('tmp/rspec_results.json'))
+  
+  puts "✅ RSpec Tests:"
+  puts "   Examples: #{rspec_results['summary']['example_count']}"
+  puts "   Failures: #{rspec_results['summary']['failure_count']}"
+  puts "   Pending: #{rspec_results['summary']['pending_count']}"
+  puts "   Duration: #{rspec_results['summary']['duration'].round(2)}s"
+end
+
+# Run Cucumber tests
+puts "\n🥒 Running Cucumber tests..."
+cucumber_output = `CUCUMBER_PUBLISH_QUIET=true bundle exec cucumber --format json --out tmp/cucumber_results.json 2>&1`
+cucumber_exit_code = $?.exitstatus
+
+# Parse Cucumber results
+if File.exist?('tmp/cucumber_results.json')
+  cucumber_results = JSON.parse(File.read('tmp/cucumber_results.json'))
+  
+  total_scenarios = 0
+  passed_scenarios = 0
+  failed_scenarios = 0
+  pending_scenarios = 0
+  
+  cucumber_results.each do |feature|
+    feature['elements']&.each do |scenario|
+      total_scenarios += 1
+      
+      all_passed = scenario['steps']&.all? { |s| s['result']['status'] == 'passed' }
+      any_failed = scenario['steps']&.any? { |s| s['result']['status'] == 'failed' }
+      any_pending = scenario['steps']&.any? { |s| s['result']['status'] == 'pending' || s['result']['status'] == 'skipped' }
+      
+      if any_failed
+        failed_scenarios += 1
+      elsif any_pending
+        pending_scenarios += 1
+      elsif all_passed
+        passed_scenarios += 1
+      end
+    end
+  end
+  
+  puts "✅ Cucumber Tests:"
+  puts "   Scenarios: #{total_scenarios}"
+  puts "   Passed: #{passed_scenarios}"
+  puts "   Failed: #{failed_scenarios}"
+  puts "   Pending: #{pending_scenarios}"
+end
+
+# Parse coverage report
+if File.exist?('coverage/.last_run.json')
+  coverage_data = JSON.parse(File.read('coverage/.last_run.json'))
+  coverage_percent = coverage_data['result']['line']
+  
+  puts "\n📈 Code Coverage:"
+  puts "   Line Coverage: #{coverage_percent.round(2)}%"
+  
+  if coverage_percent >= 80
+    puts "   ✅ Meets minimum threshold (80%)"
+  else
+    puts "   ❌ Below minimum threshold (80%)"
+  end
+end
+
+# Summary
+puts "\n" + "=" * 50
+puts "📝 Summary:"
+
+overall_success = true
+
+if rspec_exit_code == 0
+  puts "✅ RSpec tests passed"
+else
+  puts "❌ RSpec tests failed"
+  overall_success = false
+end
+
+if cucumber_exit_code == 0
+  puts "✅ Cucumber tests passed"
+else
+  puts "❌ Cucumber tests failed"
+  overall_success = false
+end
+
+if coverage_percent && coverage_percent >= 80
+  puts "✅ Coverage threshold met"
+else
+  puts "❌ Coverage below threshold"
+  overall_success = false
+end
+
+puts "\n" + "=" * 50
+if overall_success
+  puts "✅ All quality gates passed!"
+  exit 0
+else
+  puts "❌ Some quality gates failed. Please fix before committing."
+  exit 1
+end

@@ -1,0 +1,506 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Check if TTY gems are installed
+begin
+  require 'bundler/setup'
+  require 'tty-prompt'
+  require 'tty-screen'
+  require 'pastel'
+  require 'ostruct'
+rescue LoadError => e
+  puts "❌ Missing required gems for interactive menu"
+  puts ""
+  puts "Please run: bundle install"
+  puts "Or use the simple menu: make menu-simple"
+  puts ""
+  puts "Error: #{e.message}"
+  exit 1
+end
+
+# Interactive menu for Budget AI
+class BudgetAIMenu
+  def initialize
+    @prompt = TTY::Prompt.new
+    @pastel = Pastel.new
+    @commands = build_commands
+  end
+
+  def run
+    begin
+      loop do
+        clear_screen
+        show_header
+        
+        choices = build_menu_choices
+        
+        # Calculate available height for menu dynamically
+        # Use almost entire terminal height, leaving room for header and help text
+        terminal_height = TTY::Screen.height
+        # Reserve lines: header (3) + prompt (1) + help (1) + bottom margin (1)
+        reserved_lines = 6
+        items_per_page = [terminal_height - reserved_lines, 10].max
+        
+        # If terminal is very tall, show all items without pagination
+        if items_per_page >= choices.reject { |c| c[:disabled] }.count
+          items_per_page = choices.count
+        end
+        
+        selection = @prompt.select(
+          @pastel.cyan.bold("Choose an action:"),
+          choices,
+          per_page: items_per_page,
+          filter: true,
+          cycle: true,
+          help: @pastel.yellow("↑↓ Navigate  • Type to filter  • Enter to select  • Esc to quit"),
+          show_help: :always
+        )
+        
+        break if selection == :quit
+        
+        execute_command(selection)
+        # Loop continues here - back to menu
+      end
+    rescue Interrupt
+      # Handle Ctrl+C gracefully
+      puts "\n"
+    end
+    
+    puts @pastel.green.bold("👋 Goodbye!")
+    exit 0
+  end
+
+  private
+
+  def clear_screen
+    system('clear') || system('cls')
+  end
+
+  def show_header
+    puts @pastel.cyan.bold("═" * TTY::Screen.width)
+    puts @pastel.cyan.bold("  🚀 Budget AI - Interactive Menu")
+    puts @pastel.cyan.bold("═" * TTY::Screen.width)
+  end
+
+  def build_commands
+    {
+      # Development
+      server: {
+        name: "🚀 Start Rails server",
+        command: "make server",
+        category: :development,
+        description: "Start the development server with auto port detection"
+      },
+       demo: {
+         name: "🎭 Start demo server (mock data)",
+         command: "make demo",
+         category: :development,
+         description: "Start server with safe mock data for testing"
+       },
+       jobs: {
+         name: "⚙️ Start background job worker",
+         command: "make jobs",
+         category: :development,
+         description: "Start Solid Queue background job processor"
+       },
+       console: {
+         name: "💻 Rails console",
+         command: "make console",
+         category: :development,
+         description: "Open Rails console (with privacy warning)"
+       },
+       migrate: {
+         name: "📊 Run migrations",
+         command: "make migrate",
+         category: :development,
+         description: "Apply pending database migrations"
+       },
+       
+      # Testing
+      test_all: {
+        name: "🧪 Run all tests (RSpec + Cucumber)",
+        command: "make test",
+        category: :testing,
+        description: "Run complete test suite"
+      },
+      test_unit: {
+        name: "🔬 Run unit tests (RSpec)",
+        command: "make test-unit",
+        category: :testing,
+        description: "Run RSpec unit tests only"
+      },
+      test_integration: {
+        name: "🌐 Run integration tests (Cucumber)",
+        command: "make cucumber",
+        category: :testing,
+        description: "Run Cucumber feature tests"
+      },
+      coverage: {
+        name: "📈 Test coverage report",
+        command: "make coverage",
+        category: :testing,
+        description: "Run tests with coverage analysis"
+      },
+      
+      # Code Quality
+      lint: {
+        name: "🔍 Run linter (Rubocop)",
+        command: "make lint",
+        category: :quality,
+        description: "Check code style violations"
+      },
+      fix: {
+        name: "🔧 Auto-fix code style",
+        command: "make fix",
+        category: :quality,
+        description: "Auto-fix Rubocop violations"
+      },
+      quality: {
+        name: "✨ Full quality check",
+        command: "make quality-check",
+        category: :quality,
+        description: "Run all quality checks (tests + lint + analysis)"
+      },
+      commit_check: {
+        name: "✅ Pre-commit check",
+        command: "make commit-check",
+        category: :quality,
+        description: "Verify code is ready to commit"
+      },
+      flay: {
+        name: "👥 Check code duplication",
+        command: "make flay",
+        category: :quality,
+        description: "Detect duplicate code with Flay"
+      },
+      reek: {
+        name: "👃 Check code smells",
+        command: "make reek",
+        category: :quality,
+        description: "Detect code smells with Reek"
+      },
+      debride: {
+        name: "🧹 Find unused code",
+        command: "make debride",
+        category: :quality,
+        description: "Find potentially unused methods"
+      },
+      
+      # Database
+      db_setup: {
+        name: "🗄️ Setup database",
+        command: "make db-setup",
+        category: :database,
+        description: "Create and migrate database (first time)"
+      },
+      db_clean: {
+        name: "🧹 Clean transaction data",
+        command: "make db-clean",
+        category: :database,
+        description: "Remove all transactions (keeps structure)"
+      },
+      db_reset: {
+        name: "💣 Reset database",
+        command: "make db-reset",
+        category: :database,
+        description: "Complete database reset (loses all data!)"
+      },
+      db_info: {
+        name: "ℹ️ Database info",
+        command: "make db-info",
+        category: :database,
+        description: "Show database location and size"
+      },
+      
+      # AI/LLM (Ollama)
+      ollama_setup: {
+        name: "🤖 Setup Ollama",
+        command: "make ollama-setup",
+        category: :ai,
+        description: "Install Ollama and download llama2 model"
+      },
+      ollama_start: {
+        name: "▶️ Start Ollama service",
+        command: "make ollama-start",
+        category: :ai,
+        description: "Start the Ollama LLM service"
+      },
+      ollama_stop: {
+        name: "⏹️ Stop Ollama service",
+        command: "make ollama-stop",
+        category: :ai,
+        description: "Stop the Ollama service"
+      },
+      ollama_status: {
+        name: "📊 Ollama status",
+        command: "make ollama-status",
+        category: :ai,
+        description: "Check Ollama service and models"
+      },
+      ollama_test: {
+        name: "🧪 Test LLM connection",
+        command: "make ollama-test",
+        category: :ai,
+        description: "Test connection to Budget AI"
+      },
+      ollama_chat: {
+        name: "💬 Chat with LLM",
+        command: "make ollama-chat",
+        category: :ai,
+        description: "Interactive chat with llama2"
+      },
+      ollama_models: {
+        name: "📦 List LLM models",
+        command: "make ollama-models",
+        category: :ai,
+        description: "Show installed Ollama models"
+      },
+      ollama_benchmark: {
+        name: "⚡ Benchmark LLM",
+        command: "make ollama-benchmark",
+        category: :ai,
+        description: "Test LLM performance"
+      },
+      
+       # Account Analysis
+       validate_balances: {
+         name: "🏦 Validate account balances",
+         command: "make validate-balances",
+         category: :accounts,
+         description: "Check account starting balances"
+       },
+       analyze_balances: {
+         name: "📊 Analyze balance discrepancies",
+         command: "make analyze-balances",
+         category: :accounts,
+         description: "Find balance issues between accounts"
+       },
+       fix_balances: {
+         name: "🔧 Fix account starting balances",
+         command: "make fix-balances",
+         category: :accounts,
+         description: "Correct incorrect starting balances"
+       },
+       analyze_transfers: {
+         name: "🔄 Analyze transfers",
+         command: "make analyze-transfers",
+         category: :accounts,
+         description: "Find potential transfers between accounts"
+       },
+       detect_transfers: {
+         name: "🎯 Auto-detect transfers",
+         command: "make detect-transfers",
+         category: :accounts,
+         description: "Automatically mark transfers"
+       },
+       transfer_stats: {
+         name: "📊 Transfer statistics",
+         command: "make transfer-stats",
+         category: :accounts,
+         description: "Show transfer summary"
+       },
+       pot_analysis: {
+         name: "💰 Monzo pot analysis",
+         command: "make pot-analysis",
+         category: :accounts,
+         description: "Analyze Monzo pot transactions"
+       },
+       pot_balances: {
+         name: "💰 Pot balances",
+         command: "make pot-balances",
+         category: :accounts,
+         description: "Show estimated Monzo pot balances"
+       },
+      
+      # Maintenance
+      install: {
+        name: "📦 Install dependencies",
+        command: "make install",
+        category: :maintenance,
+        description: "Run bundle install"
+      },
+      clean: {
+        name: "🗑️ Clean temp files",
+        command: "make clean",
+        category: :maintenance,
+        description: "Remove temporary files and caches"
+      },
+      setup: {
+        name: "🎬 Initial setup",
+        command: "make setup",
+        category: :maintenance,
+        description: "Complete development environment setup"
+      },
+      
+      # Help
+      help: {
+        name: "📚 Show all commands",
+        command: "make help",
+        category: :help,
+        description: "Display detailed help for all commands"
+      },
+      log: {
+        name: "📜 Recent commits",
+        command: "make log",
+        category: :help,
+        description: "Show last 10 git commits"
+      },
+      check_port: {
+        name: "🔌 Check port 3000",
+        command: "make check-port",
+        category: :help,
+        description: "Check if port 3000 is available"
+      }
+    }
+  end
+
+  def build_menu_choices
+    choices = []
+    
+    # Group commands by category
+    categories = {
+       development: { icon: "🚀", label: "Development" },
+       testing: { icon: "🧪", label: "Testing" },
+       quality: { icon: "✨", label: "Code Quality" },
+       database: { icon: "🗄️", label: "Database" },
+       accounts: { icon: "🏦", label: "Account Analysis" },
+       ai: { icon: "🤖", label: "AI/LLM (Ollama)" },
+       maintenance: { icon: "🔧", label: "Maintenance" },
+       help: { icon: "📚", label: "Help & Info" }
+    }
+    
+    categories.each do |cat_key, cat_info|
+      cat_commands = @commands.select { |_, cmd| cmd[:category] == cat_key }
+      next if cat_commands.empty?
+      
+      # Add category separator
+      choices << { 
+        name: @pastel.yellow.bold("─── #{cat_info[:icon]} #{cat_info[:label]} ───"),
+        disabled: ""
+      }
+      
+      # Add commands in this category
+      cat_commands.each do |key, cmd|
+        choices << {
+          name: "  #{cmd[:name]}",
+          value: key,
+          disabled: false
+        }
+      end
+    end
+    
+    # Add quit option at the end
+    choices << { 
+      name: @pastel.yellow.bold("─── System ───"),
+      disabled: ""
+    }
+    choices << {
+      name: "  ❌ Quit",
+      value: :quit
+    }
+    
+    choices
+  end
+
+  def execute_command(key)
+    return unless @commands[key]
+    
+    cmd = @commands[key]
+    
+    clear_screen
+    puts @pastel.green.bold("▶ Executing: #{cmd[:name]}")
+    puts @pastel.cyan("  Command: #{cmd[:command]}")
+    puts @pastel.bright_black("  #{cmd[:description]}")
+    puts @pastel.cyan("─" * TTY::Screen.width)
+    puts
+    
+    # Execute the command based on its type
+    case key
+    when :server, :demo, :console
+      # These commands take over the terminal completely
+      puts @pastel.yellow("Starting #{cmd[:name]}...")
+      puts @pastel.bright_black("Use Ctrl+C to stop and return to menu")
+      puts
+      system(cmd[:command])
+      # After server stops, return to menu
+    when :ollama_chat
+      # Interactive chat exits on its own
+      system(cmd[:command])
+    when :test_all, :test_unit, :cucumber, :coverage
+      # Test commands need to show all output
+      system(cmd[:command])
+      show_test_summary
+    when :lint, :fix, :quality, :commit_check
+      # Quality commands
+      system(cmd[:command])
+    else
+      # All other commands
+      if should_show_spinner?(key)
+        run_with_spinner(cmd[:command])
+      else
+        system(cmd[:command])
+      end
+    end
+    
+    # Wait for user input before returning to menu
+    puts
+    puts @pastel.cyan("─" * TTY::Screen.width)
+    print @pastel.yellow("Press Enter to return to menu (or Ctrl+C to exit)...")
+    
+    # Clear any buffered input and wait for fresh input
+    $stdin.flush if $stdin.respond_to?(:flush)
+    input = $stdin.gets
+    
+    # If user pressed Ctrl+D or similar, exit
+    exit 0 if input.nil?
+  end
+  
+  def show_test_summary
+    # Show a nice summary after tests run
+    if $?.success?
+      puts
+      puts @pastel.green.bold("✅ Tests passed successfully!")
+    else
+      puts
+      puts @pastel.red.bold("❌ Some tests failed. Check the output above.")
+    end
+  end
+
+  def should_show_spinner?(key)
+    # Don't show spinner for interactive commands that need user input
+    non_spinner_commands = [:db_reset, :db_clean, :ollama_setup, :ollama_chat]
+    !non_spinner_commands.include?(key)
+  end
+
+  def run_with_spinner(command)
+    require 'tty-spinner'
+    
+    spinner = TTY::Spinner.new("[:spinner] Running...", format: :dots)
+    spinner.auto_spin
+    
+    success = system(command)
+    
+    if success
+      spinner.success(@pastel.green(" Done!"))
+    else
+      spinner.error(@pastel.red(" Failed!"))
+    end
+    
+    success
+  end
+end
+
+# Check if running directly
+if __FILE__ == $0
+  begin
+    menu = BudgetAIMenu.new
+    menu.run
+  rescue Interrupt
+    puts "\n👋 Goodbye!"
+    exit 0
+  rescue StandardError => e
+    puts "\n❌ Error: #{e.message}"
+    puts "Returning to simple menu..."
+    exit 1
+  end
+end

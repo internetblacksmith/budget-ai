@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Budget AI" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0f0d">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Fonts %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+  </head>
+
+  <body data-controller="toast">
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="logo">
+          <span class="logo-dot"></span>
+          Budget AI
+        </div>
+
+        <nav class="nav">
+          <%= link_to root_path, class: "nav-item #{current_page?(root_path) ? 'active' : ''}" do %>
+            <span class="material-icons">dashboard</span>
+            Dashboard
+          <% end %>
+          <%= link_to imports_path, class: "nav-item #{current_page?(imports_path) ? 'active' : ''}" do %>
+            <span class="material-icons">cloud_upload</span>
+            Import
+          <% end %>
+          <%= link_to transactions_path, class: "nav-item #{current_page?(transactions_path) ? 'active' : ''}" do %>
+            <span class="material-icons">receipt_long</span>
+            Transactions
+          <% end %>
+          <%= link_to insights_path, class: "nav-item #{current_page?(insights_path) ? 'active' : ''}" do %>
+            <span class="material-icons">auto_awesome</span>
+            AI Insights
+          <% end %>
+          <%= link_to chat_index_path, class: "nav-item #{current_page?(chat_index_path) ? 'active' : ''}" do %>
+            <span class="material-icons">chat</span>
+            Chat
+          <% end %>
+          <%= link_to budgets_path, class: "nav-item #{current_page?(budgets_path) ? 'active' : ''}" do %>
+            <span class="material-icons">account_balance_wallet</span>
+            Budgets
+          <% end %>
+        </nav>
+
+        <div class="sidebar-footer">
+          <strong>Budget AI</strong>
+          Personal Finance
+        </div>
+      </aside>
+
+      <div class="main">
+        <% if notice.present? %>
+          <div class="md-snackbar md-snackbar-notice" data-controller="dismiss" data-flash-message>
+            <div class="md-snackbar-content">
+              <span class="material-icons">check_circle</span>
+              <span class="message"><%= notice %></span>
+              <button class="md3-icon-button" data-action="click->dismiss#remove">
+                <span class="material-icons">close</span>
+              </button>
+            </div>
+          </div>
+        <% end %>
+
+        <% if alert.present? %>
+          <div class="md-snackbar md-snackbar-alert" data-controller="dismiss" data-flash-message>
+            <div class="md-snackbar-content">
+              <span class="material-icons">error</span>
+              <span class="message"><%= alert %></span>
+              <button class="md3-icon-button" data-action="click->dismiss#remove">
+                <span class="material-icons">close</span>
+              </button>
+            </div>
+          </div>
+        <% end %>
+
+        <%= yield %>
+      </div>
+    </div>
+
+    <%# Global import progress bar — visible from any page %>
+    <%= turbo_stream_from "imports" %>
+    <div id="import-progress-bar">
+      <% if @active_import_job %>
+        <%= render "imports/import_status", import_job: @active_import_job %>
+      <% end %>
+    </div>
+  </body>
+</html>

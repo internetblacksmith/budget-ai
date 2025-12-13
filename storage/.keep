@@ -1,0 +1,11 @@
+# Storage Directory
+
+This directory contains SQLite database files for the application.
+
+## Files
+- `development.sqlite3` - Development database (gitignored)
+- `test.sqlite3` - Test database (gitignored)
+- `demo.sqlite3` - Demo database with sample data (gitignored)
+- `production.sqlite3` - Production database (gitignored)
+
+All database files are excluded from version control for privacy and security.

@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+require 'socket'
+
+# Default port
+default_port = 3000
+port = default_port
+
+# Check if port is available
+def port_available?(port)
+  begin
+    server = TCPServer.new('127.0.0.1', port)
+    server.close
+    true
+  rescue Errno::EADDRINUSE
+    false
+  end
+end
+
+# Find available port starting from default
+while !port_available?(port) && port < 3100
+  puts "Port #{port} is already in use, trying next port..."
+  port += 1
+end
+
+if port >= 3100
+  puts "Could not find available port between 3000-3099"
+  exit 1
+end
+
+if port != default_port
+  puts "Using port #{port} (port #{default_port} was already in use)"
+else
+  puts "Using default port #{port}"
+end
+
+# Start Rails server with the selected port
+exec("bundle", "exec", "rails", "server", "-p", port.to_s)

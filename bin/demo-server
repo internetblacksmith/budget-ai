@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby
+
+# Demo server script for Budget AI
+# This creates a temporary test database with mock data and starts the server
+# NEVER touches your real transaction data
+
+require "fileutils"
+
+def run_command(command, description)
+  puts "🔧 #{description}..."
+  result = system(command)
+  unless result
+    puts "❌ Failed: #{description}"
+    exit(1)
+  end
+end
+
+def main
+  puts "🚀 Starting Budget AI Demo Server"
+  puts "🔒 This will use MOCK DATA only - your real data is safe"
+  puts "📁 Demo database: storage/demo.sqlite3 (separate from real data)"
+  puts "🎭 Mock data includes sample transactions"
+  puts "=" * 60
+  
+  # Check if we're in the right directory
+  unless File.exist?("app/models/transaction.rb")
+    puts "❌ Please run this from the Budget AI root directory"
+    exit(1)
+  end
+  
+  # Create a temporary test database name
+  demo_db = "storage/demo.sqlite3"
+  
+  # Remove existing demo database if it exists
+  if File.exist?(demo_db)
+    puts "🗑️  Removing existing demo database..."
+    File.delete(demo_db)
+  end
+  
+  # Set environment variables for demo
+  ENV["RAILS_ENV"] = "development"
+  ENV["DATABASE_URL"] = "sqlite3://#{File.expand_path(demo_db)}"
+  
+  puts "📊 Creating demo database with mock data..."
+  
+  # Create and migrate the demo database
+  run_command("bin/rails db:create DATABASE_URL=#{ENV['DATABASE_URL']}", "Creating demo database")
+  run_command("bin/rails db:migrate DATABASE_URL=#{ENV['DATABASE_URL']}", "Running migrations")
+  run_command("bin/rails db:seed DATABASE_URL=#{ENV['DATABASE_URL']}", "Seeding with mock data")
+  
+  puts "\n✅ Demo database ready!"
+  puts "📁 Demo database location: #{demo_db}"
+  puts "🔒 Your real database remains untouched"
+  
+  # Find available port
+  port = 3001
+  while system("lsof -i :#{port} > /dev/null 2>&1")
+    port += 1
+  end
+  
+  puts "\n🌐 Starting demo server on port #{port}..."
+  puts "📱 Open: http://localhost:#{port}"
+  puts "🛑 Press Ctrl+C to stop the demo server"
+  puts "\n" + "=" * 60
+  
+  # Start the server with the demo database
+  exec("DATABASE_URL=#{ENV['DATABASE_URL']} bin/rails server -p #{port}")
+end
+
+if __FILE__ == $0
+  main
+end

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Setup script for interactive menu
+
+echo "🎨 Setting up interactive menu for Budget AI..."
+echo ""
+
+# Check if bundler is installed
+if ! command -v bundle &> /dev/null; then
+    echo "❌ Bundler is not installed. Please install it first:"
+    echo "   gem install bundler"
+    exit 1
+fi
+
+# Install TTY gems
+echo "📦 Installing TTY gems for interactive menu..."
+bundle add tty-prompt tty-screen tty-table tty-spinner pastel --skip-install 2>/dev/null
+
+# Run bundle install
+echo "📥 Running bundle install..."
+bundle install
+
+# Make menu executable
+chmod +x bin/menu
+
+echo ""
+echo "✅ Interactive menu setup complete!"
+echo ""
+echo "You can now use:"
+echo "  make         - Launch the interactive menu with search/filter"
+echo "  ./bin/menu   - Run the menu directly"
+echo ""
+echo "Features:"
+echo "  • Use ↑/↓ arrows to navigate"
+echo "  • Type to filter/search commands"
+echo "  • Press Enter to execute"
+echo "  • Press Esc to quit"
+echo ""
+echo "🚀 Try it now: make"
