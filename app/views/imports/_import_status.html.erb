@@ -1,0 +1,99 @@
+<div id="import_job_<%= import_job.id %>"
+     data-controller="import-status"
+     data-import-status-job-id-value="<%= import_job.id %>"
+     data-import-status-status-value="<%= import_job.status %>">
+
+  <% case import_job.status %>
+  <% when "pending" %>
+    <div class="import-bar import-bar-active">
+      <span class="material-icons import-spinner">hourglass_top</span>
+      <span class="import-bar-text">Import queued &mdash; waiting to start...</span>
+      <div class="import-bar-progress">
+        <div class="import-bar-progress-indeterminate"></div>
+      </div>
+    </div>
+
+  <% when "processing" %>
+    <div class="import-bar import-bar-active">
+      <span class="material-icons import-spinner">sync</span>
+      <span class="import-bar-text" data-import-status-target="progressText">
+        <% if import_job.total_count.to_i > 0 %>
+          Importing &mdash; <%= number_with_delimiter(import_job.imported_count.to_i) %> / <%= number_with_delimiter(import_job.total_count) %> transactions
+        <% elsif import_job.imported_count.to_i > 0 %>
+          Importing &mdash; <%= import_job.imported_count %> transactions so far...
+        <% else %>
+          Importing &mdash; processing spreadsheet...
+        <% end %>
+      </span>
+      <div class="import-bar-progress">
+        <% if import_job.total_count.to_i > 0 %>
+          <% percentage = (import_job.imported_count.to_i * 100.0 / import_job.total_count).round %>
+          <div class="import-bar-progress-determinate"
+               data-import-status-target="progressBar"
+               style="width: <%= percentage %>%"></div>
+        <% else %>
+          <div class="import-bar-progress-indeterminate"></div>
+        <% end %>
+      </div>
+    </div>
+
+  <% when "completed" %>
+    <div class="import-bar import-bar-success">
+      <span class="material-icons">check_circle</span>
+      <span class="import-bar-text">
+        <% if import_job.imported_count.to_i > 0 %>
+          Import complete &mdash; <strong><%= import_job.imported_count %></strong> transactions imported
+        <% else %>
+          Import complete &mdash; no new transactions found
+        <% end %>
+      </span>
+      <div class="import-bar-actions">
+        <%= link_to transactions_path, class: "btn btn-primary btn-sm" do %>
+          <span class="material-icons">list</span>
+          View Transactions
+        <% end %>
+        <button type="button" class="btn btn-outline btn-sm"
+                data-action="click->import-status#dismiss">
+          Dismiss
+        </button>
+      </div>
+    </div>
+
+  <% when "completed_with_errors" %>
+    <div class="import-bar import-bar-warning">
+      <span class="material-icons">warning</span>
+      <span class="import-bar-text">
+        Imported <strong><%= import_job.imported_count.to_i %></strong> transactions
+        with <%= import_job.error_messages.size %> warning<%= import_job.error_messages.size == 1 ? '' : 's' %>
+      </span>
+      <div class="import-bar-actions">
+        <%= link_to transactions_path, class: "btn btn-primary btn-sm" do %>
+          <span class="material-icons">list</span>
+          View Transactions
+        <% end %>
+        <button type="button" class="btn btn-outline btn-sm"
+                data-action="click->import-status#dismiss">
+          Dismiss
+        </button>
+      </div>
+    </div>
+
+  <% when "failed" %>
+    <div class="import-bar import-bar-error">
+      <span class="material-icons">error</span>
+      <span class="import-bar-text">
+        Import failed<% if import_job.error_messages.any? %> &mdash; <%= import_job.error_messages.first %><% end %>
+      </span>
+      <div class="import-bar-actions">
+        <%= link_to imports_path, class: "btn btn-outline btn-sm" do %>
+          <span class="material-icons">refresh</span>
+          Try Again
+        <% end %>
+        <button type="button" class="btn btn-outline btn-sm"
+                data-action="click->import-status#dismiss">
+          Dismiss
+        </button>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,222 @@
+<div class="page-header">
+  <h1 class="page-title">
+    <span class="material-icons">cloud_download</span>
+    Import Transactions
+  </h1>
+</div>
+
+<!-- Import from Emma -->
+<div class="card">
+  <h2 class="card-title">
+    <span class="material-icons">cloud_download</span>
+    Import from Emma
+  </h2>
+  <p class="import-description">
+    Import all your bank transactions from Emma budget app via Google Sheets
+  </p>
+
+  <div class="import-info-banner">
+    <span class="material-icons">tips_and_updates</span>
+    <div>
+      <strong>One import = All banks</strong><br>
+      Emma exports transactions from all your connected accounts in one spreadsheet.
+    </div>
+  </div>
+
+  <% if @google_connected %>
+    <!-- Google Connected - Spreadsheet Selection -->
+    <div class="import-connected-area" data-controller="import-form"
+         data-import-form-reconnect-url-value="<%= google_auth_authorize_path %>">
+
+      <!-- Spreadsheet & Sheet selectors -->
+      <div data-import-form-target="selectorsContainer" class="import-filter-bar">
+        <div class="filter-group">
+          <label class="field-label" for="spreadsheet-select">
+            <span class="material-icons">description</span>
+            Spreadsheet
+          </label>
+          <div data-controller="custom-select">
+            <select id="spreadsheet-select" class="styled-select"
+                    disabled
+                    data-custom-select-target="select"
+                    data-import-form-target="spreadsheetSelect"
+                    data-action="change->import-form#selectSpreadsheet">
+              <option value="">Loading spreadsheets...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="field-label" for="sheet-select">
+            <span class="material-icons">tab</span>
+            Sheet
+          </label>
+          <div data-controller="custom-select">
+            <select id="sheet-select" class="styled-select"
+                    disabled
+                    data-custom-select-target="select"
+                    data-import-form-target="sheetSelect"
+                    data-action="change->import-form#selectSheet">
+              <option value="">Select a spreadsheet first</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" class="btn btn-primary"
+                  disabled
+                  data-import-form-target="importButton"
+                  data-action="click->import-form#submitImport">
+            <span class="material-icons">play_arrow</span>
+            Start Import
+          </button>
+        </div>
+      </div>
+
+      <!-- Hidden form for POST submission -->
+      <%= form_with url: import_emma_imports_path, method: :post, class: "import-hidden-form" do |f| %>
+        <%= f.hidden_field :spreadsheet_id, data: { import_form_target: "spreadsheetId" } %>
+        <%= f.hidden_field :sheet_name, data: { import_form_target: "sheetName" } %>
+      <% end %>
+
+      <!-- Account bar: always present, toggles between connected/error state -->
+      <div class="import-account-bar" data-import-form-target="accountBar">
+        <div data-import-form-target="accountInfo" class="import-account-info">
+          <span class="material-icons import-account-icon">check_circle</span>
+          Connected as <strong><%= @google_user_email %></strong>
+        </div>
+        <div data-import-form-target="accountError" class="import-account-info" hidden>
+          <span class="material-icons import-error-icon">error_outline</span>
+          <span data-import-form-target="errorMessage"></span>
+        </div>
+        <div class="import-account-actions">
+          <button type="button" class="btn btn-outline btn-sm"
+                  data-import-form-target="retryButton"
+                  data-action="click->import-form#retry"
+                  hidden>
+            <span class="material-icons">refresh</span>
+            Retry
+          </button>
+          <%= link_to google_auth_authorize_path, class: "btn btn-outline btn-sm", title: "Reconnect" do %>
+            <span class="material-icons">refresh</span>
+            Reconnect
+          <% end %>
+          <%= link_to google_auth_disconnect_path,
+              class: "btn btn-outline btn-sm",
+              data: { turbo_method: :delete },
+              title: "Disconnect Google account" do %>
+            <span class="material-icons">logout</span>
+            Disconnect
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <!-- Not Connected -->
+    <div class="import-disconnected import-connected-area">
+      <span class="material-icons">cloud_off</span>
+      <p>Connect your Google account to import from Emma's Google Sheets export.</p>
+      <%= link_to google_auth_authorize_path, class: "btn btn-primary" do %>
+        <span class="material-icons">login</span>
+        Connect Google Account
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<!-- Recent Imports -->
+<% if @recent_imports.any? %>
+  <div class="import-section">
+    <h2 class="card-title import-section-title">
+      <span class="material-icons">history</span>
+      Recent Imports
+    </h2>
+
+    <div class="import-recent-grid">
+      <% @recent_imports.each do |import| %>
+        <div class="card import-recent-card">
+          <div>
+            <h3 class="import-recent-title">
+              <%= import.imported_count %> transactions
+            </h3>
+            <p class="import-recent-meta">
+              <%= import.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+              &bull;
+              <span class="import-badge <%= import.status == 'completed' ? 'import-badge-success' : 'import-badge-error' %>">
+                <%= import.status.humanize %>
+              </span>
+            </p>
+          </div>
+
+          <% if import.error_messages.any? %>
+            <span class="material-icons import-error-icon">error</span>
+          <% else %>
+            <span class="material-icons import-success-icon">check_circle</span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<!-- Data Management -->
+<div class="import-section">
+  <h2 class="card-title import-section-title">
+    <span class="material-icons">settings</span>
+    Data Management
+  </h2>
+
+  <div class="card import-management-card">
+    <div>
+      <h3 class="import-management-title">Reset Database</h3>
+      <p class="import-management-desc">
+        Delete all transactions and import history. Useful before a fresh re-import.
+      </p>
+    </div>
+    <%= button_to "Reset Database",
+          reset_database_imports_path,
+          method: :delete,
+          class: "btn btn-outline btn-danger-outline",
+          data: { turbo_confirm: "This will permanently delete ALL transactions and import history. Continue?" } %>
+  </div>
+</div>
+
+<!-- How It Works -->
+<div class="import-section">
+  <h2 class="card-title import-section-title">
+    <span class="material-icons">help_outline</span>
+    How It Works
+  </h2>
+
+  <div class="import-how-grid">
+    <div class="card import-how-card">
+      <div class="import-step-icon">1</div>
+      <div>
+        <h3 class="import-how-title">Export from Emma</h3>
+        <p class="import-how-desc">
+          Open Emma app &rarr; Profile &rarr; Settings &rarr; Export to Google Sheets
+        </p>
+      </div>
+    </div>
+
+    <div class="card import-how-card">
+      <div class="import-step-icon">2</div>
+      <div>
+        <h3 class="import-how-title">Select Spreadsheet</h3>
+        <p class="import-how-desc">
+          Choose your Emma export spreadsheet and sheet above
+        </p>
+      </div>
+    </div>
+
+    <div class="card import-how-card">
+      <div class="import-step-icon">3</div>
+      <div>
+        <h3 class="import-how-title">Done!</h3>
+        <p class="import-how-desc">
+          All your bank transactions imported in seconds
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

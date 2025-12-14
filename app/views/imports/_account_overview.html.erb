@@ -1,0 +1,415 @@
+<!-- Account Statistics Section -->
+<div class="md3-card md3-card-elevated md-margin-medium">
+  <div class="md3-card-content">
+    <h2 class="md-title-large">
+      <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">account_balance_wallet</span>
+      Account Overview
+    </h2>
+
+    <% if account_statistics.any? %>
+      <div class="account-grid">
+        <% account_statistics.each do |stats| %>
+          <div class="account-card">
+            <div class="account-header">
+              <div class="account-info">
+                <span class="material-icons account-icon">
+                  account_balance
+                </span>
+                <div>
+                  <h3 class="account-name"><%= stats[:name].titleize %></h3>
+                  <p class="account-transaction-count">
+                    <%= pluralize(stats[:transaction_count], 'transaction') %>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="account-balance-section">
+              <div class="account-current-balance <%= stats[:current_balance] >= 0 ? 'positive' : 'negative' %>">
+                £<%= number_with_precision(stats[:current_balance].abs, precision: 2, delimiter: ',') %>
+              </div>
+              <p class="balance-label">Current Balance</p>
+            </div>
+
+            <div class="account-stats">
+              <div class="stat-row">
+                <span class="stat-label">Starting</span>
+                <span class="stat-value">£<%= number_with_precision(stats[:starting_balance], precision: 2, delimiter: ',') %></span>
+              </div>
+
+              <div class="stat-row">
+                <span class="stat-label income">
+                  <span class="material-icons">arrow_downward</span>
+                  Income
+                </span>
+                <span class="stat-value income">+£<%= number_with_precision(stats[:income], precision: 2, delimiter: ',') %></span>
+              </div>
+
+              <div class="stat-row">
+                <span class="stat-label expenses">
+                  <span class="material-icons">arrow_upward</span>
+                  Expenses
+                </span>
+                <span class="stat-value expenses">-£<%= number_with_precision(stats[:expenses], precision: 2, delimiter: ',') %></span>
+              </div>
+
+              <div class="stat-row net">
+                <span class="stat-label">
+                  <span class="material-icons"><%= stats[:net_change] >= 0 ? 'trending_up' : 'trending_down' %></span>
+                  Net Change
+                </span>
+                <span class="stat-value <%= stats[:net_change] >= 0 ? 'positive' : 'negative' %>">
+                  <%= stats[:net_change] >= 0 ? '+' : '-' %>£<%= number_with_precision(stats[:net_change].abs, precision: 2, delimiter: ',') %>
+                </span>
+              </div>
+            </div>
+
+            <div class="account-actions">
+              <%= link_to transactions_path(account: stats[:name]), class: "md3-button md3-button-outlined" do %>
+                <span class="material-icons">visibility</span>
+                View Transactions
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Combined Totals -->
+      <div class="combined-totals-section">
+        <h3 class="totals-title">
+          <span class="material-icons">analytics</span>
+          Combined Totals
+        </h3>
+
+        <div class="totals-grid">
+          <div class="total-chip transactions">
+            <span class="material-icons">receipt_long</span>
+            <div class="total-content">
+              <span class="total-value"><%= number_with_delimiter(total_transactions) %></span>
+              <span class="total-label">Transactions</span>
+            </div>
+          </div>
+
+          <div class="total-chip balance">
+            <span class="material-icons">account_balance_wallet</span>
+            <div class="total-content">
+              <span class="total-value">£<%= number_with_precision(total_balance, precision: 2, delimiter: ',') %></span>
+              <span class="total-label">Total Balance</span>
+            </div>
+          </div>
+
+          <div class="total-chip income">
+            <span class="material-icons">trending_up</span>
+            <div class="total-content">
+              <span class="total-value">£<%= number_with_precision(total_income, precision: 2, delimiter: ',') %></span>
+              <span class="total-label">Total Income</span>
+            </div>
+          </div>
+
+          <div class="total-chip expenses">
+            <span class="material-icons">trending_down</span>
+            <div class="total-content">
+              <span class="total-value">£<%= number_with_precision(total_expenses, precision: 2, delimiter: ',') %></span>
+              <span class="total-label">Total Expenses</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <div class="no-accounts-state">
+        <span class="material-icons">account_balance_wallet</span>
+        <h3>No Account Data Yet</h3>
+        <p>Import your first transactions to see account statistics</p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+/* Account Overview Styles */
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.account-card {
+  background: var(--md-sys-color-surface-container-low);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.account-card:hover {
+  background: var(--md-sys-color-surface-container);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.account-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.account-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.account-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.account-icon {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.account-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.account-transaction-count {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.account-balance-section {
+  text-align: center;
+  padding: 20px 0;
+  margin-bottom: 16px;
+  background: var(--md-sys-color-surface-container);
+  border-radius: 12px;
+}
+
+.account-current-balance {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.account-current-balance.positive {
+  color: var(--md-sys-color-primary);
+}
+
+.account-current-balance.negative {
+  color: var(--md-sys-color-error);
+}
+
+.balance-label {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.account-stats {
+  margin-bottom: 16px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-row.net {
+  padding-top: 12px;
+  margin-top: 4px;
+  border-top: 2px solid var(--md-sys-color-outline-variant);
+  border-bottom: none;
+}
+
+.stat-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.stat-label .material-icons {
+  font-size: 18px;
+}
+
+.stat-label.income .material-icons {
+  color: var(--md-sys-color-tertiary);
+}
+
+.stat-label.expenses .material-icons {
+  color: var(--md-sys-color-error);
+}
+
+.stat-value {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.stat-value.income {
+  color: var(--md-sys-color-tertiary);
+}
+
+.stat-value.expenses {
+  color: var(--md-sys-color-error);
+}
+
+.stat-value.positive {
+  color: var(--md-sys-color-primary);
+}
+
+.stat-value.negative {
+  color: var(--md-sys-color-error);
+}
+
+.account-actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.account-actions .md3-button-outlined {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Combined Totals */
+.combined-totals-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.totals-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.totals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.total-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--md-sys-color-surface-container);
+}
+
+.total-chip .material-icons {
+  font-size: 28px;
+}
+
+.total-chip.transactions {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.total-chip.balance {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.total-chip.income {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.total-chip.expenses {
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+
+.total-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.total-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.total-label {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* No Accounts State */
+.no-accounts-state {
+  text-align: center;
+  padding: 48px 20px;
+}
+
+.no-accounts-state .material-icons {
+  font-size: 64px;
+  color: var(--md-sys-color-on-surface-variant);
+  display: block;
+  margin-bottom: 16px;
+}
+
+.no-accounts-state h3 {
+  margin: 0 0 8px 0;
+  color: var(--md-sys-color-on-surface);
+}
+
+.no-accounts-state p {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .account-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-current-balance {
+    font-size: 1.75rem;
+  }
+
+  .totals-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .total-chip {
+    flex-direction: column;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .total-chip .material-icons {
+    font-size: 24px;
+  }
+
+  .total-value {
+    font-size: 1rem;
+  }
+}
+</style>
