@@ -1,0 +1,9 @@
+<%= turbo_stream.replace "transactions-content" do %>
+  <%= render partial: "transactions/transactions_content", locals: {
+    transactions: @transactions,
+    total_income: @total_income,
+    total_expenses: @total_expenses,
+    net_balance: @net_balance,
+    filtered_count: @filtered_count
+  } %>
+<% end %>

@@ -1,0 +1,135 @@
+<%= turbo_stream_from "transactions" %>
+
+<div class="page-header">
+  <h1 class="page-title">
+    <span class="material-icons">receipt_long</span>
+    Transactions
+  </h1>
+  <%= link_to new_transaction_path, class: "btn btn-primary" do %>
+    <span class="material-icons">add</span>
+    New Transaction
+  <% end %>
+</div>
+
+<!-- Filters -->
+<div class="card card-mb" data-controller="transaction-filter">
+  <%= form_with url: transactions_path, method: :get, data: {
+    turbo_frame: "transactions-frame",
+    transaction_filter_target: "form"
+  } do |form| %>
+    <div class="txn-filter-bar">
+      <div class="filter-group">
+        <label class="field-label">
+          <span class="material-icons">visibility</span>
+          Show
+        </label>
+        <div data-controller="custom-select">
+          <%= form.select :show,
+              options_for_select([
+                ["Non-Transfers", ""],
+                ["Income", "income"],
+                ["Expenses", "expenses"],
+                ["Transfers", "transfers"],
+                ["Everything", "all"]
+              ], params[:show]),
+              {},
+              { class: "styled-select",
+                data: {
+                  custom_select_target: "select",
+                  transaction_filter_target: "showFilter",
+                  action: "change->transaction-filter#filterChanged"
+                }
+              } %>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="field-label">
+          <span class="material-icons">account_balance</span>
+          Account
+        </label>
+        <div data-controller="custom-select">
+          <%= form.select :account,
+              options_for_select([["All Accounts", ""]] + @accounts.map { |a| [a.capitalize, a] }, params[:account]),
+              {},
+              { class: "styled-select",
+                data: {
+                  custom_select_target: "select",
+                  transaction_filter_target: "accountFilter",
+                  action: "change->transaction-filter#filterChanged"
+                }
+              } %>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="field-label">
+          <span class="material-icons">label</span>
+          Category
+        </label>
+        <div data-controller="custom-select">
+          <%= form.select :category,
+              options_for_select([["All Categories", ""]] + @categories.map { |c| [c, c] }, params[:category]),
+              {},
+              { class: "styled-select",
+                data: {
+                  custom_select_target: "select",
+                  transaction_filter_target: "categoryFilter",
+                  action: "change->transaction-filter#filterChanged"
+                }
+              } %>
+        </div>
+      </div>
+
+      <div class="filter-group-grow">
+        <label class="field-label">
+          <span class="material-icons">search</span>
+          Search
+        </label>
+        <%= form.text_field :search,
+            value: params[:search],
+            placeholder: "Search descriptions...",
+            class: "styled-input",
+            data: {
+              transaction_filter_target: "searchFilter",
+              action: "input->transaction-filter#filterChanged"
+            } %>
+      </div>
+
+      <div class="filter-group filter-group-narrow">
+        <label class="field-label">
+          <span class="material-icons">payments</span>
+          Amount
+        </label>
+        <%= form.number_field :amount,
+            value: params[:amount],
+            placeholder: "0.00",
+            class: "styled-input",
+            step: "0.01",
+            min: "0",
+            data: {
+              transaction_filter_target: "amountFilter",
+              action: "input->transaction-filter#filterChanged"
+            } %>
+      </div>
+
+      <div class="filter-actions">
+        <%= link_to "#", class: "btn btn-outline", data: { action: "click->transaction-filter#clearFilters" } do %>
+          Clear
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%= turbo_frame_tag "transactions-frame" do %>
+  <div id="transactions-content">
+    <%= render partial: "transactions/transactions_content", locals: {
+      transactions: @transactions,
+      total_income: @total_income,
+      total_expenses: @total_expenses,
+      net_balance: @net_balance,
+      filtered_count: @filtered_count
+    } %>
+  </div>
+<% end %>

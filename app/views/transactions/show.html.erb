@@ -1,0 +1,152 @@
+<%= link_to transactions_path, class: "back-link" do %>
+  <span class="material-icons">arrow_back</span>
+  Back to Transactions
+<% end %>
+
+<div class="page-header">
+  <h1 class="page-title">
+    <span class="material-icons">receipt_long</span>
+    Transaction Details
+  </h1>
+  <div class="txn-show-actions">
+    <%= link_to edit_transaction_path(@transaction), class: "btn btn-outline" do %>
+      <span class="material-icons">edit</span>
+      Edit
+    <% end %>
+    <%= link_to transaction_path(@transaction),
+        data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this transaction?" },
+        class: "btn btn-outline btn-danger" do %>
+      <span class="material-icons">delete</span>
+      Delete
+    <% end %>
+  </div>
+</div>
+
+<div class="txn-show-stack">
+  <!-- Amount Hero -->
+  <div class="card txn-hero">
+    <div class="txn-hero-amount <%= @transaction.income? ? 'txn-amount-positive' : 'txn-amount-negative' %>">
+      <%= @transaction.income? ? '+' : '-' %>£<%= number_with_precision(@transaction.amount.abs, precision: 2, delimiter: ',') %>
+    </div>
+    <div class="txn-hero-description"><%= @transaction.description %></div>
+    <div class="txn-hero-badges">
+      <span class="txn-category"><%= @transaction.income? ? 'Income' : 'Expense' %></span>
+      <% if @transaction.is_transfer? %>
+        <span class="txn-transfer-badge">
+          <span class="material-icons">sync_alt</span>
+          Transfer
+        </span>
+      <% end %>
+      <% if @transaction.category.present? %>
+        <span class="txn-category"><%= @transaction.category %></span>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Core Details -->
+  <div class="card">
+    <h2 class="card-title">
+      <span class="material-icons">info</span>
+      Details
+    </h2>
+
+    <div class="txn-detail-grid">
+      <div class="txn-detail-item">
+        <span class="txn-detail-label">Date</span>
+        <span class="txn-detail-value"><%= @transaction.date.strftime("%d %B %Y") %> &bull; <%= @transaction.date.strftime("%A") %></span>
+      </div>
+
+      <div class="txn-detail-item">
+        <span class="txn-detail-label">Account</span>
+        <span class="txn-detail-value"><%= @transaction.account&.capitalize %></span>
+      </div>
+
+      <div class="txn-detail-item">
+        <span class="txn-detail-label">Source</span>
+        <span class="txn-detail-value"><%= @transaction.source&.humanize %></span>
+      </div>
+
+      <% if @transaction.transaction_type.present? %>
+        <div class="txn-detail-item">
+          <span class="txn-detail-label">Transaction Type</span>
+          <span class="txn-detail-value"><%= @transaction.transaction_type %></span>
+        </div>
+      <% end %>
+
+      <% if @transaction.balance.present? %>
+        <div class="txn-detail-item">
+          <span class="txn-detail-label">Balance After</span>
+          <span class="txn-detail-value">£<%= number_with_precision(@transaction.balance, precision: 2, delimiter: ',') %></span>
+        </div>
+      <% end %>
+
+      <% if @transaction.notes.present? %>
+        <div class="txn-detail-item txn-detail-full">
+          <span class="txn-detail-label">Notes</span>
+          <span class="txn-detail-value"><%= simple_format(@transaction.notes) %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @transaction.sort_code.present? || @transaction.account_number.present? %>
+    <div class="card">
+      <h2 class="card-title">
+        <span class="material-icons">account_balance</span>
+        Account Information
+      </h2>
+
+      <div class="txn-detail-grid">
+        <% if @transaction.sort_code.present? %>
+          <div class="txn-detail-item">
+            <span class="txn-detail-label">Sort Code</span>
+            <span class="txn-detail-value"><%= @transaction.sort_code %></span>
+          </div>
+        <% end %>
+        <% if @transaction.account_number.present? %>
+          <div class="txn-detail-item">
+            <span class="txn-detail-label">Account Number</span>
+            <span class="txn-detail-value">****<%= @transaction.account_number.last(4) %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% emma_fields = {
+    "Bank" => @transaction.bank,
+    "Currency" => @transaction.currency,
+    "Account Name" => @transaction.account_name,
+    "Emma Category" => @transaction.emma_category,
+    "Subcategory" => @transaction.subcategory,
+    "Tags" => @transaction.tags,
+    "Counterparty" => @transaction.counterparty,
+    "Merchant" => @transaction.merchant,
+    "Custom Name" => @transaction.custom_name,
+    "Additional Details" => @transaction.additional_details,
+    "Linked Transaction" => @transaction.linked_transaction_id
+  }.compact_blank %>
+
+  <% if emma_fields.any? %>
+    <div class="card">
+      <h2 class="card-title">
+        <span class="material-icons">more_horiz</span>
+        Additional Information
+      </h2>
+
+      <div class="txn-detail-grid">
+        <% emma_fields.each do |label, value| %>
+          <div class="txn-detail-item">
+            <span class="txn-detail-label"><%= label %></span>
+            <span class="txn-detail-value"><%= value %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="txn-show-meta">
+    Transaction ID: <%= @transaction.transaction_id %> &bull;
+    Imported: <%= @transaction.created_at.strftime("%d %B %Y at %H:%M") %>
+  </div>
+</div>

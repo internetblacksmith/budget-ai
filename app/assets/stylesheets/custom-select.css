@@ -1,0 +1,162 @@
+/* ========================================================================
+   Custom Select Dropdown — replaces native <select> rendering
+   Uses MD3 CSS variables for full dark-theme integration
+   ======================================================================== */
+
+/* Wrapper — provides positioning context for the dropdown menu */
+[data-controller="custom-select"] {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+/* Trigger button — matches .styled-select appearance */
+.custom-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--md-sys-color-on-surface);
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  outline: none;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.custom-select-trigger:hover:not(:disabled) {
+  border-color: var(--md-sys-color-on-surface-variant);
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.custom-select-trigger:focus:not(:disabled) {
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 229, 160, 0.2);
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.custom-select-trigger.open {
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 229, 160, 0.2);
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.custom-select-trigger:disabled {
+  background: #111916;
+  color: #5a7a6e;
+  border-color: #1e2d28;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Trigger text */
+.custom-select-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Arrow icon */
+.custom-select-arrow {
+  font-size: 20px;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-left: 8px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.custom-select-trigger:disabled .custom-select-arrow {
+  color: #5a7a6e;
+}
+
+/* Dropdown menu */
+.custom-select-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--md-sys-color-surface-container-high);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 12px;
+  box-shadow: var(--md-sys-elevation-level3);
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.custom-select-menu.open {
+  display: block;
+}
+
+/* Individual option */
+.custom-select-option {
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-select-option:hover {
+  background: rgba(var(--md-sys-color-primary-rgb), 0.08);
+}
+
+.custom-select-option.highlighted {
+  background: rgba(var(--md-sys-color-primary-rgb), 0.12);
+}
+
+.custom-select-option.selected {
+  color: var(--md-sys-color-primary);
+  font-weight: 500;
+  background: rgba(var(--md-sys-color-primary-rgb), 0.08);
+}
+
+.custom-select-option.selected.highlighted {
+  background: rgba(var(--md-sys-color-primary-rgb), 0.16);
+}
+
+/* First and last options get matching border radius */
+.custom-select-option:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.custom-select-option:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
+.custom-select-option:only-child {
+  border-radius: 8px;
+}
+
+/* Scrollbar styling for the menu */
+.custom-select-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-select-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-select-menu::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline);
+  border-radius: 3px;
+}
+
+.custom-select-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-on-surface-variant);
+}

@@ -1,0 +1,107 @@
+<!-- Summary Strip -->
+<div class="txn-summary-strip">
+  <div class="summary-item">
+    Income:
+    <span class="summary-value positive">£<%= number_with_precision(total_income, precision: 2, delimiter: ',') %></span>
+  </div>
+  <div class="summary-divider"></div>
+  <div class="summary-item">
+    Expenses:
+    <span class="summary-value negative">£<%= number_with_precision(total_expenses, precision: 2, delimiter: ',') %></span>
+  </div>
+  <div class="summary-divider"></div>
+  <div class="summary-item">
+    Net:
+    <span class="summary-value <%= net_balance >= 0 ? 'positive' : 'negative' %>">£<%= number_with_precision(net_balance, precision: 2, delimiter: ',') %></span>
+  </div>
+  <div class="summary-divider"></div>
+  <div class="summary-item">
+    Showing: <span class="summary-value"><%= filtered_count %></span> transactions
+  </div>
+</div>
+
+<% if transactions.any? %>
+  <!-- Bulk Actions -->
+  <div id="bulk-actions" class="txn-bulk-bar" hidden data-controller="bulk-operations">
+    <span class="bulk-count">
+      <span id="selected-count">0</span> selected
+    </span>
+    <%= form_with url: bulk_update_transactions_path, method: :post, id: "bulk-form", data: { turbo: false } do |form| %>
+      <input type="hidden" name="transaction_ids" id="bulk-transaction-ids">
+      <select name="bulk_action" class="styled-select" id="bulk-action-select">
+        <option value="">Choose action...</option>
+        <option value="mark_transfer">Mark as Transfers</option>
+        <option value="unmark_transfer">Unmark as Transfers</option>
+        <option value="delete">Delete Selected</option>
+      </select>
+      <%= form.submit "Apply", class: "btn btn-primary", id: "bulk-submit", disabled: true %>
+    <% end %>
+  </div>
+
+  <!-- Transactions Table -->
+  <div class="card card-flush" data-controller="bulk-operations">
+    <table class="txn-table">
+      <thead>
+        <tr>
+          <th class="txn-checkbox-col">
+            <input type="checkbox" id="select-all-checkbox" class="txn-checkbox">
+          </th>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Category</th>
+          <th>Account</th>
+          <th class="numeric txn-amount-col">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% transactions.each do |transaction| %>
+          <tr>
+            <td class="txn-checkbox-col">
+              <input type="checkbox" class="transaction-checkbox txn-checkbox" value="<%= transaction.id %>" data-transaction-id="<%= transaction.id %>">
+            </td>
+            <td>
+              <div><%= transaction.date.strftime("%d %b %Y") %></div>
+              <div class="txn-date-sub"><%= transaction.date.strftime("%A") %></div>
+            </td>
+            <td>
+              <%= link_to transaction.description, transaction_path(transaction), class: "txn-description-link", data: { turbo_frame: "_top" } %>
+              <% if transaction.is_transfer? %>
+                <span class="txn-transfer-badge">
+                  <span class="material-icons">sync_alt</span>
+                  Transfer
+                </span>
+              <% end %>
+            </td>
+            <td>
+              <% if transaction.category.present? %>
+                <span class="txn-category"><%= transaction.category %></span>
+              <% else %>
+                <span class="txn-category txn-category-empty">—</span>
+              <% end %>
+            </td>
+            <td>
+              <span class="txn-account"><%= transaction.account %></span>
+            </td>
+            <td class="txn-amount-col <%= transaction.income? ? 'txn-amount-positive' : 'txn-amount-negative' %>">
+              <%= transaction.income? ? "+" : "-" %>£<%= number_with_precision(transaction.amount.abs, precision: 2, delimiter: ',') %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <%= render partial: "pagination", locals: { transactions: transactions } %>
+<% else %>
+  <div class="card">
+    <div class="empty-state">
+      <span class="material-icons">search_off</span>
+      <h3>No transactions found</h3>
+      <p>
+        Try adjusting your filters or
+        <%= link_to "clear all filters", transactions_path, class: "accent-link", data: { turbo_frame: "transactions-frame" } %>.
+      </p>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,107 @@
+<%= link_to transactions_path, class: "back-link" do %>
+  <span class="material-icons">arrow_back</span>
+  Back to Transactions
+<% end %>
+
+<div class="page-header">
+  <h1 class="page-title">
+    <span class="material-icons">add_circle</span>
+    New Transaction
+  </h1>
+</div>
+
+<div class="card txn-form-card">
+  <%= form_with model: @transaction, local: true do |form| %>
+    <% if @transaction.errors.any? %>
+      <div class="txn-form-errors">
+        <span class="material-icons">error</span>
+        <div>
+          <strong><%= pluralize(@transaction.errors.count, "error") %> prohibited this transaction from being saved:</strong>
+          <ul>
+            <% @transaction.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="txn-form-grid">
+      <div class="field-group">
+        <label class="field-label" for="transaction_date">
+          <span class="material-icons">calendar_today</span> Date
+        </label>
+        <%= form.date_field :date, class: "styled-input", required: true %>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="transaction_account">
+          <span class="material-icons">account_balance</span> Account
+        </label>
+        <div data-controller="custom-select">
+          <%= form.select :account,
+              options_for_select(@accounts, @transaction.account),
+              { prompt: "Select account" },
+              class: "styled-select",
+              required: true,
+              data: { custom_select_target: "select" } %>
+        </div>
+      </div>
+
+      <div class="field-group txn-form-full">
+        <label class="field-label" for="transaction_description">
+          <span class="material-icons">description</span> Description
+        </label>
+        <%= form.text_field :description, class: "styled-input", required: true, placeholder: "e.g. Grocery shopping at Tesco" %>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="transaction_amount">
+          <span class="material-icons">payments</span> Amount
+        </label>
+        <%= form.number_field :amount, class: "styled-input", required: true, step: "0.01", placeholder: "0.00" %>
+        <span class="field-hint">Negative for expenses, positive for income</span>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="transaction_category">
+          <span class="material-icons">label</span> Category (optional)
+        </label>
+        <%= form.text_field :category, class: "styled-input", list: "categories-list" %>
+        <datalist id="categories-list">
+          <option value="Groceries">
+          <option value="Transport">
+          <option value="Bills">
+          <option value="Entertainment">
+          <option value="Dining">
+          <option value="Shopping">
+          <option value="Health">
+          <option value="Other">
+        </datalist>
+      </div>
+
+      <div class="field-group txn-form-full">
+        <label class="field-label" for="transaction_notes">
+          <span class="material-icons">notes</span> Notes (optional)
+        </label>
+        <%= form.text_area :notes, class: "styled-input", rows: 3, placeholder: "Additional context or information" %>
+      </div>
+
+      <div class="field-group txn-form-full">
+        <label class="txn-form-checkbox">
+          <%= form.check_box :is_transfer, class: "txn-checkbox" %>
+          <span class="material-icons">swap_horiz</span>
+          Mark as transfer
+        </label>
+      </div>
+    </div>
+
+    <div class="txn-form-actions">
+      <%= link_to transactions_path, class: "btn btn-outline" do %>
+        <span class="material-icons">arrow_back</span>
+        Cancel
+      <% end %>
+      <%= form.submit "Create Transaction", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

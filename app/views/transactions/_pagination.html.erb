@@ -1,0 +1,62 @@
+<% if transactions.total_pages > 1 %>
+  <div class="txn-pagination">
+    <% if transactions.first_page? %>
+      <button disabled class="btn btn-outline btn-disabled">
+        <span class="material-icons">chevron_left</span>
+      </button>
+    <% else %>
+      <%= link_to transactions_path(page: transactions.prev_page, **current_params),
+          class: "btn btn-outline",
+          data: { turbo_frame: "transactions-frame" } do %>
+        <span class="material-icons">chevron_left</span>
+      <% end %>
+    <% end %>
+
+    <div class="page-numbers">
+      <% (1..transactions.total_pages).each do |page_num| %>
+        <% if page_num == transactions.current_page %>
+          <span class="btn btn-primary page-btn-current">
+            <%= page_num %>
+          </span>
+        <% elsif (page_num - transactions.current_page).abs <= 2 || page_num == 1 || page_num == transactions.total_pages %>
+          <%= link_to page_num,
+              transactions_path(page: page_num, **current_params),
+              class: "btn btn-outline page-btn",
+              data: { turbo_frame: "transactions-frame" } %>
+        <% elsif page_num == transactions.current_page - 3 || page_num == transactions.current_page + 3 %>
+          <span class="page-ellipsis">...</span>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if transactions.last_page? %>
+      <button disabled class="btn btn-outline btn-disabled">
+        <span class="material-icons">chevron_right</span>
+      </button>
+    <% else %>
+      <%= link_to transactions_path(page: transactions.next_page, **current_params),
+          class: "btn btn-outline",
+          data: { turbo_frame: "transactions-frame" } do %>
+        <span class="material-icons">chevron_right</span>
+      <% end %>
+    <% end %>
+
+    <div class="page-info">
+      Page <strong><%= transactions.current_page %></strong> of <strong><%= transactions.total_pages %></strong>
+      (<%= transactions.total_count %> transactions)
+    </div>
+
+    <div class="per-page">
+      <label for="per-page">Show:</label>
+      <div data-controller="custom-select">
+        <select id="per-page" class="styled-select"
+                data-custom-select-target="select"
+                data-action="change->transaction-filter#changePerPage">
+          <option value="50" <%= 'selected' if params[:per] == '50' %>>50</option>
+          <option value="100" <%= 'selected' if params[:per] == '100' %>>100</option>
+          <option value="200" <%= 'selected' if params[:per].nil? || params[:per] == '200' %>>200</option>
+        </select>
+      </div>
+    </div>
+  </div>
+<% end %>
