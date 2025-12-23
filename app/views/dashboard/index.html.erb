@@ -1,0 +1,144 @@
+<% content_for(:title) { "Budget AI — Dashboard" } %>
+
+<div class="page-header">
+  <h1 class="page-title">Dashboard</h1>
+  <span class="page-date"><%= @current_month_label %></span>
+</div>
+
+<!-- Stat Cards -->
+<div class="stats">
+  <div class="stat-card income">
+    <div class="stat-label">Income</div>
+    <div class="stat-value"><%= number_to_currency(@total_income, unit: "£") %></div>
+  </div>
+  <div class="stat-card expense">
+    <div class="stat-label">Expenses</div>
+    <div class="stat-value"><%= number_to_currency(@total_expenses, unit: "£") %></div>
+  </div>
+  <div class="stat-card balance">
+    <div class="stat-label">Net Balance</div>
+    <div class="stat-value"><%= number_to_currency(@net_balance, unit: "£") %></div>
+  </div>
+  <div class="stat-card savings">
+    <div class="stat-label">Savings Rate</div>
+    <div class="stat-value"><%= @savings_rate %>%</div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="charts-row">
+  <div class="card">
+    <div class="card-title">Income vs Expenses</div>
+    <% max_val = [@monthly_data.flat_map { |m| [m[:income], m[:expenses]] }.max || 1, 1].max %>
+    <% count = @monthly_data.size %>
+    <% padding_x = 40; padding_top = 10; padding_bottom = 30; chart_w = 500; chart_h = 200 %>
+    <% inner_w = chart_w - padding_x; inner_h = chart_h - padding_top - padding_bottom %>
+    <div class="line-chart-wrap">
+      <svg class="line-chart-svg" viewBox="0 0 <%= chart_w %> <%= chart_h %>" preserveAspectRatio="none">
+        <%# Grid lines %>
+        <% 5.times do |i| %>
+          <% y = padding_top + (inner_h * i / 4.0) %>
+          <line x1="<%= padding_x %>" y1="<%= y %>" x2="<%= chart_w %>" y2="<%= y %>" stroke="var(--md-sys-color-outline-variant)" stroke-width="0.5" stroke-dasharray="4 3"/>
+          <text x="<%= padding_x - 6 %>" y="<%= y + 3 %>" text-anchor="end" fill="var(--md-sys-color-on-surface-variant)" font-size="9" font-family="DM Sans, sans-serif"><%= number_to_currency(max_val * (4 - i) / 4.0, unit: "£", precision: 0) %></text>
+        <% end %>
+
+        <%# Build points %>
+        <% income_points = @monthly_data.each_with_index.map { |m, i| x = padding_x + (inner_w * i / [count - 1, 1].max.to_f); y = padding_top + inner_h - (inner_h * m[:income] / max_val); "#{x.round(1)},#{y.round(1)}" } %>
+        <% expense_points = @monthly_data.each_with_index.map { |m, i| x = padding_x + (inner_w * i / [count - 1, 1].max.to_f); y = padding_top + inner_h - (inner_h * m[:expenses] / max_val); "#{x.round(1)},#{y.round(1)}" } %>
+
+        <%# Income fill %>
+        <polygon points="<%= padding_x %>,<%= padding_top + inner_h %> <%= income_points.join(' ') %> <%= chart_w %>,<%= padding_top + inner_h %>" fill="url(#income-gradient)" opacity="0.15"/>
+        <%# Expense fill %>
+        <polygon points="<%= padding_x %>,<%= padding_top + inner_h %> <%= expense_points.join(' ') %> <%= chart_w %>,<%= padding_top + inner_h %>" fill="url(#expense-gradient)" opacity="0.15"/>
+
+        <%# Lines %>
+        <polyline points="<%= income_points.join(' ') %>" fill="none" stroke="var(--md-sys-color-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="<%= expense_points.join(' ') %>" fill="none" stroke="#ff6b6b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <%# Dots + labels %>
+        <% @monthly_data.each_with_index do |m, i| %>
+          <% x = padding_x + (inner_w * i / [count - 1, 1].max.to_f) %>
+          <% y_inc = padding_top + inner_h - (inner_h * m[:income] / max_val) %>
+          <% y_exp = padding_top + inner_h - (inner_h * m[:expenses] / max_val) %>
+          <circle cx="<%= x.round(1) %>" cy="<%= y_inc.round(1) %>" r="3.5" fill="var(--md-sys-color-primary)" stroke="var(--md-sys-color-surface-container)" stroke-width="1.5">
+            <title>Income: <%= number_to_currency(m[:income], unit: "£") %></title>
+          </circle>
+          <circle cx="<%= x.round(1) %>" cy="<%= y_exp.round(1) %>" r="3.5" fill="#ff6b6b" stroke="var(--md-sys-color-surface-container)" stroke-width="1.5">
+            <title>Expenses: <%= number_to_currency(m[:expenses], unit: "£") %></title>
+          </circle>
+          <text x="<%= x.round(1) %>" y="<%= chart_h - 6 %>" text-anchor="middle" fill="var(--md-sys-color-on-surface-variant)" font-size="10" font-family="DM Sans, sans-serif"><%= m[:month] %></text>
+        <% end %>
+
+        <defs>
+          <linearGradient id="income-gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--md-sys-color-primary)"/>
+            <stop offset="100%" stop-color="var(--md-sys-color-primary)" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="expense-gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ff6b6b"/>
+            <stop offset="100%" stop-color="#ff6b6b" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="chart-legend-inline">
+      <span class="chart-legend-item"><span class="chart-legend-dot income-dot"></span> Income</span>
+      <span class="chart-legend-item"><span class="chart-legend-dot expense-dot"></span> Expenses</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Spending by Category</div>
+    <% if @top_categories.any? %>
+      <div class="donut-wrap">
+        <svg class="donut-svg" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="4"/>
+          <% @top_categories.each do |cat| %>
+            <circle cx="21" cy="21" r="15.9" fill="none"
+                    stroke="<%= cat[:color] %>" stroke-width="4"
+                    stroke-dasharray="<%= cat[:dash] %> <%= cat[:gap] %>"
+                    stroke-dashoffset="<%= cat[:offset] %>" stroke-linecap="round"/>
+          <% end %>
+        </svg>
+        <div class="donut-legend">
+          <% @top_categories.each do |cat| %>
+            <div class="legend-item">
+              <span class="legend-left">
+                <span class="legend-dot" style="background: <%= cat[:color] %>"></span>
+                <%= cat[:name] %>
+              </span>
+              <span class="legend-amount"><%= number_to_currency(cat[:amount], unit: "£") %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <div class="empty-state"><p>No expense data yet.</p></div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="card">
+  <div class="card-title">Recent Transactions</div>
+  <% if @recent_transactions.any? %>
+    <div class="txn-list">
+      <% @recent_transactions.each do |txn| %>
+        <div class="txn-item">
+          <div class="txn-icon">
+            <span class="material-icons"><%= category_icon(txn.category) %></span>
+          </div>
+          <div>
+            <div class="txn-name"><%= txn.description.truncate(40) %></div>
+            <div class="txn-meta"><%= txn.account&.titleize %> &middot; <%= txn.date.strftime("%b %-d") %></div>
+          </div>
+          <div class="txn-amount <%= txn.income? ? 'positive' : 'negative' %>">
+            <%= txn.income? ? "+" : "-" %><%= number_to_currency(txn.amount.abs, unit: "£") %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state"><p>No transactions yet. <%= link_to "Import some data", imports_path, class: "accent-link" %> to get started.</p></div>
+  <% end %>
+</div>
