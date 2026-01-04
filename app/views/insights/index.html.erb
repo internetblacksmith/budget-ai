@@ -1,0 +1,116 @@
+<div class="page-header">
+  <h1 class="page-title">
+    <span class="material-icons">auto_awesome</span>
+    AI Insights
+  </h1>
+</div>
+
+<% if @has_transactions %>
+  <!-- Quick Actions -->
+  <div class="action-cards">
+    <%= link_to spending_analysis_insights_path, class: "action-card" do %>
+      <div class="action-icon primary">
+        <span class="material-icons">analytics</span>
+      </div>
+      <h3>Spending Analysis</h3>
+      <p>Get AI insights on your spending patterns</p>
+    <% end %>
+
+    <%= link_to budget_suggestions_insights_path, class: "action-card" do %>
+      <div class="action-icon secondary">
+        <span class="material-icons">account_balance_wallet</span>
+      </div>
+      <h3>Budget Suggestions</h3>
+      <p>Receive personalized budget recommendations</p>
+    <% end %>
+
+    <%= link_to categorize_transactions_insights_path, method: :post, class: "action-card" do %>
+      <div class="action-icon tertiary">
+        <span class="material-icons">category</span>
+      </div>
+      <h3>Auto-Categorize</h3>
+      <p>Let AI categorize uncategorized transactions</p>
+    <% end %>
+
+    <div class="action-card has-dropdown" data-controller="pattern-dropdown" data-action="click->pattern-dropdown#toggle">
+      <div class="action-icon accent">
+        <span class="material-icons">pattern</span>
+      </div>
+      <h3>Spending Patterns</h3>
+      <p>Analyze specific spending behaviors</p>
+      <span class="material-icons dropdown-arrow">expand_more</span>
+
+      <div class="pattern-dropdown" data-pattern-dropdown-target="menu">
+        <%= link_to explain_pattern_insights_path(pattern_type: 'weekend_spending'), class: "pattern-option" do %>
+          <span class="material-icons">weekend</span>
+          <div>
+            <strong>Weekend Spending</strong>
+            <span>Analyze weekend vs weekday patterns</span>
+          </div>
+        <% end %>
+        <%= link_to explain_pattern_insights_path(pattern_type: 'recurring'), class: "pattern-option" do %>
+          <span class="material-icons">repeat</span>
+          <div>
+            <strong>Recurring Transactions</strong>
+            <span>Identify subscriptions and regular payments</span>
+          </div>
+        <% end %>
+        <%= link_to explain_pattern_insights_path(pattern_type: 'high_value'), class: "pattern-option" do %>
+          <span class="material-icons">trending_up</span>
+          <div>
+            <strong>High-Value Spending</strong>
+            <span>Examine large transactions and outliers</span>
+          </div>
+        <% end %>
+        <%= link_to explain_pattern_insights_path(pattern_type: 'category_spike'), class: "pattern-option" do %>
+          <span class="material-icons">bar_chart</span>
+          <div>
+            <strong>Category Spikes</strong>
+            <span>Detect unusual spending in categories</span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Overview -->
+  <div class="card">
+    <div class="card-title">
+      <span class="material-icons">account_balance</span>
+      Financial Overview
+    </div>
+
+    <div class="accounts-grid">
+      <% @account_statistics.each do |account| %>
+        <div class="account-card">
+          <h4><%= account[:name] %></h4>
+          <div class="account-balance-row">
+            <span class="account-balance-label">Balance</span>
+            <span class="account-balance-amount <%= account[:current_balance] >= 0 ? 'positive' : 'negative' %>">
+              <%= number_to_currency(account[:current_balance], unit: "£") %>
+            </span>
+          </div>
+          <div class="account-detail-row">
+            <span>Income: <%= number_to_currency(account[:income], unit: "£") %></span>
+            <span>Expenses: <%= number_to_currency(account[:expenses], unit: "£") %></span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+
+<% else %>
+  <div class="card">
+    <div class="empty-state">
+      <span class="material-icons">auto_awesome</span>
+      <h3>No Transaction Data Yet</h3>
+      <p>Import some transactions first to get AI-powered insights.</p>
+      <%= link_to imports_path, class: "btn btn-primary" do %>
+        <span class="material-icons">cloud_upload</span>
+        Import Transactions
+      <% end %>
+    </div>
+  </div>
+<% end %>
+

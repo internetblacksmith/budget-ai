@@ -1,0 +1,93 @@
+<%= link_to insights_path, class: "back-link" do %>
+  <span class="material-icons">arrow_back</span>
+  Back to Insights
+<% end %>
+
+<div class="page-header">
+  <h1 class="page-title">
+    <span class="material-icons">account_balance_wallet</span>
+    Budget Suggestions
+  </h1>
+</div>
+
+<!-- Month Selection -->
+<% if @available_months.any? %>
+  <div class="card card-mb">
+    <%= form_with url: budget_suggestions_insights_path, method: :get, local: true do |form| %>
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label class="field-label">
+            <span class="material-icons">date_range</span>
+            Months to Include
+          </label>
+          <div class="checkbox-group">
+            <% @available_months.each do |month| %>
+              <label class="checkbox-label">
+                <%= check_box_tag "months[]", month, @selected_months.include?(month) %>
+                <%= Date.parse("#{month}-01").strftime("%b %Y") %>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <%= form.submit "Generate", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<!-- Streamed AI Suggestions -->
+<div class="card card-mb"
+     data-controller="llm-stream"
+     data-llm-stream-url-value="<%= stream_insights_path(type: "budget_suggestions", months: @selected_months) %>">
+  <div class="card-title">
+    <span class="material-icons">smart_toy</span>
+    Personalized Recommendations
+  </div>
+
+  <div data-llm-stream-target="loading" class="llm-loading">
+    <div class="loading-spinner-ring"></div>
+    <p>Generating budget recommendations...</p>
+  </div>
+
+  <div data-llm-stream-target="output" class="analysis-content" hidden></div>
+
+  <div data-llm-stream-target="error" class="llm-error" hidden>
+    <span class="material-icons">error_outline</span>
+    <p data-llm-stream-target="errorMessage"></p>
+  </div>
+
+  <div data-llm-stream-target="actions" class="button-row" hidden>
+    <%= link_to spending_analysis_insights_path, class: "btn btn-outline" do %>
+      <span class="material-icons">analytics</span>
+      View Spending Analysis
+    <% end %>
+    <%= link_to categorize_transactions_insights_path, method: :post, class: "btn btn-primary" do %>
+      <span class="material-icons">category</span>
+      Auto-Categorize Transactions
+    <% end %>
+  </div>
+</div>
+
+<!-- Budget Tips -->
+<div class="card">
+  <div class="card-title">
+    <span class="material-icons">lightbulb</span>
+    Budget Planning Tips
+  </div>
+
+  <div class="info-grid">
+    <div class="info-item">
+      <div><strong>50/30/20 Rule</strong><p>50% needs, 30% wants, 20% savings</p></div>
+    </div>
+    <div class="info-item">
+      <div><strong>Emergency Fund</strong><p>Aim for 3-6 months of expenses</p></div>
+    </div>
+    <div class="info-item">
+      <div><strong>Track Regularly</strong><p>Review spending weekly</p></div>
+    </div>
+    <div class="info-item">
+      <div><strong>Set Goals</strong><p>Define clear financial objectives</p></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+# LLM Configuration
+# Supports: claude_cli (shells out to `claude` CLI) and ollama (local models)
+
+default: &default
+  # LLM Provider - options: claude_cli, ollama, mock
+  provider: claude_cli
+
+  # Model for claude_cli: sonnet, opus, haiku
+  # Model for ollama: qwen2.5:32b, llama2, mistral, etc.
+  model: sonnet
+
+  # Timeout settings (in seconds)
+  timeout: 120
+
+  # Temperature for generation (0.0 - 1.0)
+  temperature: 0.7
+
+  # Maximum tokens for responses
+  max_tokens: 4096
+
+  # System prompt for budget analysis
+  system_prompt: |
+    You are a helpful financial assistant analyzing personal budget data.
+    Provide clear, actionable insights about spending patterns and budgeting.
+    Be concise but thorough. Focus on practical advice.
+    Never suggest risky investments or provide specific investment advice.
+
+  # Ollama-specific settings (used when provider: ollama)
+  # host: <%= ENV.fetch('LLM_HOST', 'localhost') %>
+  # port: <%= ENV.fetch('LLM_PORT', 11434) %>
+  # read_timeout: 120
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+  # Use a mock provider for tests
+  provider: mock
+
+production:
+  <<: *default

@@ -1,0 +1,120 @@
+<%= link_to insights_path, class: "back-link" do %>
+  <span class="material-icons">arrow_back</span>
+  Back to Insights
+<% end %>
+
+<div class="page-header">
+  <h1 class="page-title">
+    <span class="material-icons">category</span>
+    Auto-Categorize Transactions
+  </h1>
+</div>
+
+<% if @categorization_results.present? %>
+  <% successful_count = @categorization_results.count { |r| r[:success] } %>
+  <% failed_count = @categorization_results.count { |r| !r[:success] } %>
+
+  <!-- Summary -->
+  <div class="card card-mb">
+    <div class="card-title">
+      <span class="material-icons">summarize</span>
+      Categorization Summary
+    </div>
+
+    <div class="summary-pills">
+      <div class="summary-pill success">
+        <span class="material-icons">check_circle</span>
+        <div class="summary-pill-data">
+          <strong><%= successful_count %></strong>
+          <span>Successfully Categorized</span>
+        </div>
+      </div>
+      <div class="summary-pill error">
+        <span class="material-icons">error</span>
+        <div class="summary-pill-data">
+          <strong><%= failed_count %></strong>
+          <span>Failed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Table -->
+  <div class="card">
+    <div class="card-title">
+      <span class="material-icons">smart_toy</span>
+      Categorization Results
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Amount</th>
+          <th>AI Category</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @categorization_results.each do |result| %>
+          <tr>
+            <td><%= result[:transaction].date.strftime('%d/%m/%Y') %></td>
+            <td><div class="text-truncate"><%= result[:transaction].description %></div></td>
+            <td>
+              <span class="<%= result[:transaction].amount >= 0 ? 'amount-positive' : 'amount-negative' %>">
+                <%= number_to_currency(result[:transaction].amount.abs, unit: "£") %>
+              </span>
+            </td>
+            <td>
+              <% if result[:success] %>
+                <span class="chip success">
+                  <span class="material-icons">label</span>
+                  <%= result[:transaction].category %>
+                </span>
+              <% else %>
+                <span class="chip error">
+                  <span class="material-icons">close</span>
+                  Failed
+                </span>
+              <% end %>
+            </td>
+            <td>
+              <% if result[:success] %>
+                <span class="material-icons status-success">check_circle</span>
+              <% else %>
+                <span class="material-icons status-error" title="<%= result[:error] %>">error</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @categorization_results.any? { |r| r[:success] } %>
+      <div class="button-row">
+        <%= link_to transactions_path, class: "btn btn-primary" do %>
+          <span class="material-icons">view_list</span>
+          View Updated Transactions
+        <% end %>
+        <%= link_to budget_suggestions_insights_path, class: "btn btn-outline" do %>
+          <span class="material-icons">account_balance_wallet</span>
+          Get Budget Suggestions
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+<% else %>
+  <div class="card">
+    <div class="empty-state">
+      <span class="material-icons">done_all</span>
+      <h3>All Transactions Already Categorized!</h3>
+      <p>Great job! All your transactions have been categorized.</p>
+      <%= link_to spending_analysis_insights_path, class: "btn btn-primary" do %>
+        <span class="material-icons">analytics</span>
+        Analyze Spending Patterns
+      <% end %>
+    </div>
+  </div>
+<% end %>

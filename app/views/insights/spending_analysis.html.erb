@@ -1,0 +1,84 @@
+<%= link_to insights_path, class: "back-link" do %>
+  <span class="material-icons">arrow_back</span>
+  Back to Insights
+<% end %>
+
+<div class="page-header">
+  <h1 class="page-title">
+    <span class="material-icons">analytics</span>
+    Spending Analysis
+  </h1>
+</div>
+
+<!-- Period Selection -->
+<div class="card card-mb">
+  <%= form_with url: spending_analysis_insights_path, method: :get, local: true do |form| %>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label class="field-label" for="period">
+          <span class="material-icons">date_range</span>
+          Time Period
+        </label>
+        <div data-controller="custom-select">
+          <%= form.select :period,
+              options_for_select([
+                ['Today', 'today'],
+                ['This Week', 'this_week'],
+                ['Last Week', 'last_week'],
+                ['This Month', 'this_month'],
+                ['Last Month', 'last_month'],
+                ['Last 3 Months', 'last_3_months']
+              ], @period || 'last_month'),
+              {},
+              class: "styled-select", id: "period",
+              data: { custom_select_target: "select" } %>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="field-label" for="account">
+          <span class="material-icons">account_balance</span>
+          Account
+        </label>
+        <div data-controller="custom-select">
+          <%= form.select :account,
+              options_for_select([['All Accounts', '']] + Account.pluck(:name).map { |n| [n.capitalize, n] }, @account),
+              {},
+              class: "styled-select", id: "account",
+              data: { custom_select_target: "select" } %>
+        </div>
+      </div>
+
+      <%= form.submit "Analyze", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
+
+<!-- Streamed AI Analysis -->
+<div class="card"
+     data-controller="llm-stream"
+     data-llm-stream-url-value="<%= stream_insights_path(type: "spending_analysis", period: @period, account: @account) %>">
+  <div class="card-title">
+    <span class="material-icons">smart_toy</span>
+    AI Analysis Results
+  </div>
+
+  <div data-llm-stream-target="loading" class="llm-loading">
+    <div class="loading-spinner-ring"></div>
+    <p>Analyzing your spending patterns...</p>
+  </div>
+
+  <div data-llm-stream-target="output" class="analysis-content" hidden></div>
+
+  <div data-llm-stream-target="error" class="llm-error" hidden>
+    <span class="material-icons">error_outline</span>
+    <p data-llm-stream-target="errorMessage"></p>
+  </div>
+
+  <div data-llm-stream-target="actions" class="button-row" hidden>
+    <%= link_to budget_suggestions_insights_path, class: "btn btn-outline" do %>
+      <span class="material-icons">account_balance_wallet</span>
+      Get Budget Suggestions
+    <% end %>
+  </div>
+</div>

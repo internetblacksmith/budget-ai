@@ -1,0 +1,102 @@
+<% case pattern_type %>
+<% when :weekend_spending %>
+  <div class="info-item">
+    <span class="material-icons">schedule</span>
+    <div>
+      <strong>Set Weekend Budgets</strong>
+      <p>Allocate a specific amount for weekend activities</p>
+    </div>
+  </div>
+  <div class="info-item">
+    <span class="material-icons">savings</span>
+    <div>
+      <strong>Plan Activities</strong>
+      <p>Look for free or low-cost weekend activities</p>
+    </div>
+  </div>
+  <div class="info-item">
+    <span class="material-icons">receipt</span>
+    <div>
+      <strong>Track Weekend Expenses</strong>
+      <p>Review weekend spending weekly to stay aware</p>
+    </div>
+  </div>
+
+<% when :recurring %>
+  <div class="info-item">
+    <span class="material-icons">subscriptions</span>
+    <div>
+      <strong>Audit Subscriptions</strong>
+      <p>Review all recurring payments monthly</p>
+    </div>
+  </div>
+  <div class="info-item">
+    <span class="material-icons">cancel</span>
+    <div>
+      <strong>Cancel Unused Services</strong>
+      <p>Identify and cancel subscriptions you don't use</p>
+    </div>
+  </div>
+  <div class="info-item">
+    <span class="material-icons">compare</span>
+    <div>
+      <strong>Compare Alternatives</strong>
+      <p>Look for cheaper alternatives to existing services</p>
+    </div>
+  </div>
+
+<% when :high_value %>
+  <div class="info-item">
+    <span class="material-icons">event</span>
+    <div>
+      <strong>Plan Large Purchases</strong>
+      <p>Create a timeline and budget for big expenses</p>
+    </div>
+  </div>
+  <div class="info-item">
+    <span class="material-icons">compare_arrows</span>
+    <div>
+      <strong>Research Before Buying</strong>
+      <p>Compare prices and read reviews for large purchases</p>
+    </div>
+  </div>
+  <div class="info-item">
+    <span class="material-icons">account_balance</span>
+    <div>
+      <strong>Build Emergency Fund</strong>
+      <p>Save for unexpected large expenses</p>
+    </div>
+  </div>
+
+<% when :category_spike %>
+  <div class="info-item">
+    <span class="material-icons">notifications</span>
+    <div>
+      <strong>Set Category Alerts</strong>
+      <p>Monitor categories prone to spending spikes</p>
+    </div>
+  </div>
+  <div class="info-item">
+    <span class="material-icons">timeline</span>
+    <div>
+      <strong>Identify Triggers</strong>
+      <p>Understand what causes spending spikes</p>
+    </div>
+  </div>
+  <div class="info-item">
+    <span class="material-icons">balance</span>
+    <div>
+      <strong>Buffer Categories</strong>
+      <p>Add buffer amounts to volatile spending categories</p>
+    </div>
+  </div>
+
+<% else %>
+  <div class="info-item">
+    <span class="material-icons">insights</span>
+    <div>
+      <strong>Regular Reviews</strong>
+      <p>Review spending patterns monthly</p>
+    </div>
+  </div>
+<% end %>

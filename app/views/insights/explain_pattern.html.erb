@@ -1,0 +1,82 @@
+<%= link_to insights_path, class: "back-link" do %>
+  <span class="material-icons">arrow_back</span>
+  Back to Insights
+<% end %>
+
+<div class="page-header">
+  <h1 class="page-title">
+    <%= pattern_icon(@pattern_type) %>
+    Spending Patterns
+  </h1>
+</div>
+
+<div class="pattern-hero">
+  <h2><%= pattern_title(@pattern_type) %></h2>
+  <p><%= pattern_description(@pattern_type) %></p>
+</div>
+
+<!-- Streamed AI Pattern Analysis -->
+<div class="card card-mb"
+     data-controller="llm-stream"
+     data-llm-stream-url-value="<%= stream_insights_path(type: "explain_pattern", pattern_type: @pattern_type) %>">
+  <div class="card-title">
+    <span class="material-icons">smart_toy</span>
+    AI Pattern Analysis
+  </div>
+
+  <div data-llm-stream-target="loading" class="llm-loading">
+    <div class="loading-spinner-ring"></div>
+    <p>Analyzing your spending patterns...</p>
+  </div>
+
+  <div data-llm-stream-target="output" class="analysis-content" hidden></div>
+
+  <div data-llm-stream-target="error" class="llm-error" hidden>
+    <span class="material-icons">error_outline</span>
+    <p data-llm-stream-target="errorMessage"></p>
+  </div>
+
+  <div data-llm-stream-target="actions" class="button-row" hidden>
+    <%= link_to spending_analysis_insights_path, class: "btn btn-outline" do %>
+      <span class="material-icons">analytics</span>
+      Full Spending Analysis
+    <% end %>
+    <%= link_to budget_suggestions_insights_path, class: "btn btn-primary" do %>
+      <span class="material-icons">account_balance_wallet</span>
+      Get Budget Suggestions
+    <% end %>
+  </div>
+</div>
+
+<!-- Actionable Tips -->
+<div class="card card-mb">
+  <div class="card-title">
+    <span class="material-icons">tips_and_updates</span>
+    Tips for <%= pattern_title(@pattern_type) %>
+  </div>
+
+  <div class="info-grid">
+    <%= render partial: "pattern_tips", locals: { pattern_type: @pattern_type } %>
+  </div>
+</div>
+
+<!-- Other Patterns -->
+<div class="card">
+  <div class="card-title">
+    <span class="material-icons">explore</span>
+    Explore Other Patterns
+  </div>
+
+  <div class="link-grid">
+    <% other_patterns = [:weekend_spending, :recurring, :high_value, :category_spike] - [@pattern_type] %>
+    <% other_patterns.each do |pattern| %>
+      <%= link_to explain_pattern_insights_path(pattern_type: pattern), class: "icon-link" do %>
+        <%= pattern_icon(pattern) %>
+        <div>
+          <strong><%= pattern_title(pattern) %></strong>
+          <span><%= pattern_description(pattern) %></span>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
