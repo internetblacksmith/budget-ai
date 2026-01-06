@@ -1,0 +1,8 @@
+<%= form_with url: chat_index_path, id: "chat-form", data: { chat_target: "form", action: "submit->chat#send" } do |f| %>
+  <div class="chat-input-group">
+    <%= f.text_field :message, placeholder: "Ask about your finances...", autocomplete: "off", autofocus: true, class: "chat-input", data: { chat_target: "input" } %>
+    <button type="submit" class="btn btn-primary chat-send" data-chat-target="submit">
+      <span class="material-icons">send</span>
+    </button>
+  </div>
+<% end %>

@@ -1,0 +1,20 @@
+<div class="chat-message chat-message-<%= message.role %>">
+  <div class="message-avatar">
+    <span class="material-icons"><%= message.role == "user" ? "person" : "auto_awesome" %></span>
+  </div>
+  <div class="message-bubble">
+    <% if message.role == "assistant" %>
+      <div class="message-content analysis-content" data-controller="markdown" data-markdown-raw-value="<%= message.content %>"><%= simple_format(message.content) %></div>
+    <% else %>
+      <div class="message-content"><%= simple_format(message.content) %></div>
+    <% end %>
+    <div class="message-footer">
+      <span class="message-time"><%= message.created_at.strftime("%H:%M") %></span>
+      <% if message.role == "user" && message.persisted? %>
+        <%= button_to retry_chat_path(message), method: :post, class: "message-retry-btn", title: "Retry from here", data: { turbo_confirm: "Retry from this message? This will delete all messages from here onwards." } do %>
+          <span class="material-icons">replay</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

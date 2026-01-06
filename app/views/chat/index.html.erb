@@ -1,0 +1,44 @@
+<div class="chat-container" data-controller="chat">
+  <div class="chat-header">
+    <div class="page-title">
+      <span class="material-icons">chat</span>
+      Chat
+    </div>
+    <% if @messages.any? %>
+      <%= button_to "Clear", clear_chat_index_path, method: :delete, class: "btn btn-outline btn-sm", data: { turbo_confirm: "Clear all chat history?" } %>
+    <% end %>
+  </div>
+
+  <div class="chat-messages" id="chat-messages" data-chat-target="messages">
+    <% if @messages.empty? %>
+      <div class="chat-welcome" id="chat-welcome">
+        <span class="material-icons">auto_awesome</span>
+        <h3>Ask me anything about your finances</h3>
+        <p>I can analyze your spending, suggest budgets, explain patterns, and more.</p>
+
+        <div class="quick-chips">
+          <button class="chip" data-action="click->chat#quickAction" data-message="Analyze my spending this month">
+            <span class="material-icons">analytics</span> Analyze spending
+          </button>
+          <button class="chip" data-action="click->chat#quickAction" data-message="Suggest budgets based on my spending habits">
+            <span class="material-icons">account_balance_wallet</span> Suggest budgets
+          </button>
+          <button class="chip" data-action="click->chat#quickAction" data-message="What are my top spending categories?">
+            <span class="material-icons">category</span> Top categories
+          </button>
+          <button class="chip" data-action="click->chat#quickAction" data-message="Do I have any recurring payments I should review?">
+            <span class="material-icons">repeat</span> Recurring payments
+          </button>
+        </div>
+      </div>
+    <% else %>
+      <% @messages.each do |message| %>
+        <%= render partial: "chat/message", locals: { message: message } %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="chat-input-bar">
+    <%= render partial: "chat/form" %>
+  </div>
+</div>

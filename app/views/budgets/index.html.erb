@@ -1,0 +1,115 @@
+<div class="page-header">
+  <h1 class="page-title">
+    <span class="material-icons">account_balance_wallet</span>
+    Budgets
+  </h1>
+  <span class="page-date"><%= Date.current.strftime("%B %Y") %></span>
+</div>
+
+<% if @budgets.any? %>
+  <div class="budget-grid">
+    <% @budgets.each do |budget| %>
+      <div class="card budget-card <%= 'over-budget' if budget.over_budget? %>">
+        <div class="budget-header">
+          <div class="budget-category">
+            <span class="material-icons"><%= category_icon(budget.category) %></span>
+            <h3><%= budget.category %></h3>
+          </div>
+          <div class="budget-actions">
+            <%= button_to budget_path(budget), method: :delete, class: "btn-icon", data: { turbo_confirm: "Remove budget for #{budget.category}?" } do %>
+              <span class="material-icons">delete_outline</span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="budget-amounts">
+          <span class="budget-spent">£<%= "%.2f" % budget.spent_this_month %></span>
+          <span class="budget-separator">of</span>
+          <span class="budget-limit">£<%= "%.2f" % budget.monthly_limit %></span>
+        </div>
+
+        <div class="progress-bar-container">
+          <div class="progress-bar <%= budget.over_budget? ? 'over' : '' %>" style="width: <%= [budget.percentage_used, 100].min %>%"></div>
+        </div>
+
+        <div class="budget-footer">
+          <% if budget.over_budget? %>
+            <span class="budget-status over">
+              <span class="material-icons">warning</span>
+              Over by £<%= "%.2f" % budget.remaining.abs %>
+            </span>
+          <% else %>
+            <span class="budget-status ok">
+              £<%= "%.2f" % budget.remaining %> remaining
+            </span>
+          <% end %>
+          <span class="budget-percentage"><%= budget.percentage_used %>%</span>
+        </div>
+
+        <% if budget.notes.present? %>
+          <p class="budget-notes"><%= budget.notes %></p>
+        <% end %>
+
+        <%= form_with model: budget, class: "budget-edit-form", data: { budget_target: "editForm" } do |f| %>
+          <div class="budget-edit-fields">
+            <div class="field-group">
+              <%= f.label :monthly_limit, "Monthly limit", class: "field-label" %>
+              <%= f.number_field :monthly_limit, step: 0.01, min: 0.01, class: "styled-input" %>
+            </div>
+            <div class="field-group">
+              <%= f.label :notes, class: "field-label" %>
+              <%= f.text_field :notes, class: "styled-input", placeholder: "Optional notes" %>
+            </div>
+            <%= f.submit "Update", class: "btn btn-primary btn-sm" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="card">
+    <div class="empty-state">
+      <span class="material-icons">account_balance_wallet</span>
+      <h3>No budgets yet</h3>
+      <p>Create your first budget below, or <%= link_to "chat with AI", chat_index_path, class: "accent-link" %> for budget suggestions based on your spending.</p>
+    </div>
+  </div>
+<% end %>
+
+<div class="card card-mt">
+  <h2 class="card-title">
+    <span class="material-icons">add_circle</span>
+    Add Budget
+  </h2>
+
+  <%= form_with model: Budget.new, url: budgets_path, class: "budget-form" do |f| %>
+    <div class="budget-form-fields">
+      <div class="field-group">
+        <%= f.label :category, class: "field-label" do %>
+          <span class="material-icons">category</span> Category
+        <% end %>
+        <div data-controller="custom-select">
+          <%= f.select :category, ApplicationHelper::CATEGORY_ICONS.keys.sort, { prompt: "Select category" }, class: "styled-select", data: { custom_select_target: "select" } %>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <%= f.label :monthly_limit, class: "field-label" do %>
+          <span class="material-icons">payments</span> Monthly Limit (£)
+        <% end %>
+        <%= f.number_field :monthly_limit, step: 0.01, min: 0.01, class: "styled-input", placeholder: "0.00" %>
+      </div>
+
+      <div class="field-group">
+        <%= f.label :notes, class: "field-label" do %>
+          <span class="material-icons">notes</span> Notes
+        <% end %>
+        <%= f.text_field :notes, class: "styled-input", placeholder: "Optional notes" %>
+      </div>
+
+      <div class="field-group field-submit">
+        <%= f.submit "Create Budget", class: "btn btn-primary" %>
+      </div>
+    </div>
+  <% end %>
+</div>
