@@ -1,0 +1,9 @@
+<%
+rerun = File.file?('rerun.txt') ? IO.read('rerun.txt') : ""
+rerun = rerun.strip.gsub /\s/, ' '
+rerun_opts = rerun.empty? ? "--format #{ENV['CUCUMBER_FORMAT'] || 'progress'} features" : "--format #{ENV['CUCUMBER_FORMAT'] || 'pretty'} #{rerun}"
+# Exclude @pending_oauth tests as they require complex OAuth mocking
+std_opts = "--format #{ENV['CUCUMBER_FORMAT'] || 'pretty'} --strict --tags 'not @wip and not @pending_oauth'"
+%>
+default: <%= std_opts %> features
+rerun: <%= rerun_opts %> --format rerun --out rerun.txt --strict --tags 'not @wip'
