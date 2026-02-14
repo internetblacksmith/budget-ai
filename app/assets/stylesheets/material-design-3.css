@@ -1,0 +1,1085 @@
+/* 
+ * Material Design 3 (Material You) Complete Design System
+ * Following official MD3 specifications from m3.material.io
+ * 
+ * This file provides a comprehensive MD3 implementation for Budget AI
+ * All components follow the latest Material Design 3 guidelines
+ */
+
+/* ========================================================================
+   COLOR SYSTEM - Material Design 3 Tokens
+   ======================================================================== */
+
+:root {
+  /* Primary palette — Dark teal/emerald from Template 1 */
+  --md-sys-color-primary: #00e5a0;
+  --md-sys-color-on-primary: #003731;
+  --md-sys-color-primary-container: #005048;
+  --md-sys-color-on-primary-container: #73f7e8;
+
+  /* Secondary palette */
+  --md-sys-color-secondary: #b1ccc7;
+  --md-sys-color-on-secondary: #1c3532;
+  --md-sys-color-secondary-container: #334b48;
+  --md-sys-color-on-secondary-container: #cde8e3;
+
+  /* Tertiary palette */
+  --md-sys-color-tertiary: #81c784;
+  --md-sys-color-on-tertiary: #003731;
+  --md-sys-color-tertiary-container: #2e7d32;
+  --md-sys-color-on-tertiary-container: #a5d6a7;
+
+  /* Error palette */
+  --md-sys-color-error: #ff6b6b;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000a;
+  --md-sys-color-on-error-container: #ffdad6;
+
+  /* Success palette (custom for financial app) */
+  --md-sys-color-success: #00e5a0;
+  --md-sys-color-on-success: #003a0c;
+  --md-sys-color-success-container: #005313;
+  --md-sys-color-on-success-container: #6bff82;
+
+  /* Warning palette */
+  --md-sys-color-warning: #fbbf24;
+  --md-sys-color-on-warning: #000000;
+  --md-sys-color-warning-container: #663d00;
+  --md-sys-color-on-warning-container: #ffcc80;
+
+  /* Neutral palette — Dark backgrounds */
+  --md-sys-color-background: #0a0f0d;
+  --md-sys-color-on-background: #e8f0ec;
+  --md-sys-color-surface: #111916;
+  --md-sys-color-on-surface: #e8f0ec;
+
+  /* Surface variants — Dark teal tones */
+  --md-sys-color-surface-variant: #1e2d28;
+  --md-sys-color-on-surface-variant: #7a9a8e;
+  --md-sys-color-surface-container-lowest: #0a0f0d;
+  --md-sys-color-surface-container-low: #111916;
+  --md-sys-color-surface-container: #182320;
+  --md-sys-color-surface-container-high: #1e2d28;
+  --md-sys-color-surface-container-highest: #263832;
+
+  /* Outline colors */
+  --md-sys-color-outline: #2a3f38;
+  --md-sys-color-outline-variant: #2a3f38;
+
+  /* Inverse colors */
+  --md-sys-color-inverse-surface: #e8f0ec;
+  --md-sys-color-inverse-on-surface: #0a0f0d;
+  --md-sys-color-inverse-primary: #006a60;
+
+  /* Shadows */
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+
+  /* Additional support colors for RGB values (for opacity) */
+  --md-sys-color-on-surface-rgb: 232, 240, 236;
+  --md-sys-color-primary-rgb: 0, 229, 160;
+  --md-sys-color-surface-rgb: 17, 25, 22;
+}
+
+/* ========================================================================
+   ELEVATION SYSTEM - Material Design 3 Elevation Levels
+   ======================================================================== */
+
+:root {
+  /* MD3 Elevation - Using color overlay + shadow */
+  --md-sys-elevation-level0: none;
+  --md-sys-elevation-level1: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --md-sys-elevation-level2: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --md-sys-elevation-level3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px rgba(0, 0, 0, 0.3);
+  --md-sys-elevation-level4: 0px 6px 10px 4px rgba(0, 0, 0, 0.15), 0px 2px 3px rgba(0, 0, 0, 0.3);
+  --md-sys-elevation-level5: 0px 8px 12px 6px rgba(0, 0, 0, 0.15), 0px 4px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================================================
+   TYPOGRAPHY SYSTEM - Material Design 3 Type Scale
+   ======================================================================== */
+
+:root {
+  /* Font families */
+  --md-sys-typescale-font-family-brand: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --md-sys-typescale-font-family-plain: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  
+  /* Display fonts */
+  --md-sys-typescale-display-large-font: var(--md-sys-typescale-font-family-brand);
+  --md-sys-typescale-display-large-size: 57px;
+  --md-sys-typescale-display-large-line-height: 64px;
+  --md-sys-typescale-display-large-weight: 400;
+  --md-sys-typescale-display-large-tracking: -0.25px;
+  
+  --md-sys-typescale-display-medium-font: var(--md-sys-typescale-font-family-brand);
+  --md-sys-typescale-display-medium-size: 45px;
+  --md-sys-typescale-display-medium-line-height: 52px;
+  --md-sys-typescale-display-medium-weight: 400;
+  --md-sys-typescale-display-medium-tracking: 0;
+  
+  --md-sys-typescale-display-small-font: var(--md-sys-typescale-font-family-brand);
+  --md-sys-typescale-display-small-size: 36px;
+  --md-sys-typescale-display-small-line-height: 44px;
+  --md-sys-typescale-display-small-weight: 400;
+  --md-sys-typescale-display-small-tracking: 0;
+  
+  /* Headline fonts */
+  --md-sys-typescale-headline-large-font: var(--md-sys-typescale-font-family-brand);
+  --md-sys-typescale-headline-large-size: 32px;
+  --md-sys-typescale-headline-large-line-height: 40px;
+  --md-sys-typescale-headline-large-weight: 400;
+  --md-sys-typescale-headline-large-tracking: 0;
+  
+  --md-sys-typescale-headline-medium-font: var(--md-sys-typescale-font-family-brand);
+  --md-sys-typescale-headline-medium-size: 28px;
+  --md-sys-typescale-headline-medium-line-height: 36px;
+  --md-sys-typescale-headline-medium-weight: 400;
+  --md-sys-typescale-headline-medium-tracking: 0;
+  
+  --md-sys-typescale-headline-small-font: var(--md-sys-typescale-font-family-brand);
+  --md-sys-typescale-headline-small-size: 24px;
+  --md-sys-typescale-headline-small-line-height: 32px;
+  --md-sys-typescale-headline-small-weight: 400;
+  --md-sys-typescale-headline-small-tracking: 0;
+  
+  /* Title fonts */
+  --md-sys-typescale-title-large-font: var(--md-sys-typescale-font-family-brand);
+  --md-sys-typescale-title-large-size: 22px;
+  --md-sys-typescale-title-large-line-height: 28px;
+  --md-sys-typescale-title-large-weight: 400;
+  --md-sys-typescale-title-large-tracking: 0;
+  
+  --md-sys-typescale-title-medium-font: var(--md-sys-typescale-font-family-plain);
+  --md-sys-typescale-title-medium-size: 16px;
+  --md-sys-typescale-title-medium-line-height: 24px;
+  --md-sys-typescale-title-medium-weight: 500;
+  --md-sys-typescale-title-medium-tracking: 0.15px;
+  
+  --md-sys-typescale-title-small-font: var(--md-sys-typescale-font-family-plain);
+  --md-sys-typescale-title-small-size: 14px;
+  --md-sys-typescale-title-small-line-height: 20px;
+  --md-sys-typescale-title-small-weight: 500;
+  --md-sys-typescale-title-small-tracking: 0.1px;
+  
+  /* Label fonts */
+  --md-sys-typescale-label-large-font: var(--md-sys-typescale-font-family-plain);
+  --md-sys-typescale-label-large-size: 14px;
+  --md-sys-typescale-label-large-line-height: 20px;
+  --md-sys-typescale-label-large-weight: 500;
+  --md-sys-typescale-label-large-tracking: 0.1px;
+  
+  --md-sys-typescale-label-medium-font: var(--md-sys-typescale-font-family-plain);
+  --md-sys-typescale-label-medium-size: 12px;
+  --md-sys-typescale-label-medium-line-height: 16px;
+  --md-sys-typescale-label-medium-weight: 500;
+  --md-sys-typescale-label-medium-tracking: 0.5px;
+  
+  --md-sys-typescale-label-small-font: var(--md-sys-typescale-font-family-plain);
+  --md-sys-typescale-label-small-size: 11px;
+  --md-sys-typescale-label-small-line-height: 16px;
+  --md-sys-typescale-label-small-weight: 500;
+  --md-sys-typescale-label-small-tracking: 0.5px;
+  
+  /* Body fonts */
+  --md-sys-typescale-body-large-font: var(--md-sys-typescale-font-family-plain);
+  --md-sys-typescale-body-large-size: 16px;
+  --md-sys-typescale-body-large-line-height: 24px;
+  --md-sys-typescale-body-large-weight: 400;
+  --md-sys-typescale-body-large-tracking: 0.5px;
+  
+  --md-sys-typescale-body-medium-font: var(--md-sys-typescale-font-family-plain);
+  --md-sys-typescale-body-medium-size: 14px;
+  --md-sys-typescale-body-medium-line-height: 20px;
+  --md-sys-typescale-body-medium-weight: 400;
+  --md-sys-typescale-body-medium-tracking: 0.25px;
+  
+  --md-sys-typescale-body-small-font: var(--md-sys-typescale-font-family-plain);
+  --md-sys-typescale-body-small-size: 12px;
+  --md-sys-typescale-body-small-line-height: 16px;
+  --md-sys-typescale-body-small-weight: 400;
+  --md-sys-typescale-body-small-tracking: 0.4px;
+}
+
+/* ========================================================================
+   SHAPE SYSTEM - Material Design 3 Corner Radii
+   ======================================================================== */
+
+:root {
+  --md-sys-shape-corner-none: 0px;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
+}
+
+/* ========================================================================
+   MOTION - Material Design 3 Transitions
+   ======================================================================== */
+
+:root {
+  /* Easing curves */
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  
+  /* Durations */
+  --md-sys-motion-duration-short1: 50ms;
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short3: 150ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium3: 350ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-duration-long1: 450ms;
+  --md-sys-motion-duration-long2: 500ms;
+  --md-sys-motion-duration-long3: 550ms;
+  --md-sys-motion-duration-long4: 600ms;
+}
+
+/* ========================================================================
+   STATE LAYERS - Material Design 3 Interactive States
+   ======================================================================== */
+
+:root {
+  --md-sys-state-hover-opacity: 0.08;
+  --md-sys-state-focus-opacity: 0.12;
+  --md-sys-state-pressed-opacity: 0.12;
+  --md-sys-state-dragged-opacity: 0.16;
+}
+
+/* ========================================================================
+   BASE STYLES - Reset and Foundation
+   ======================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  font-weight: var(--md-sys-typescale-body-large-weight);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  color: var(--md-sys-color-on-background);
+  background-color: var(--md-sys-color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================================================
+   TYPOGRAPHY CLASSES
+   ======================================================================== */
+
+.md3-display-large {
+  font-family: var(--md-sys-typescale-display-large-font);
+  font-size: var(--md-sys-typescale-display-large-size);
+  line-height: var(--md-sys-typescale-display-large-line-height);
+  font-weight: var(--md-sys-typescale-display-large-weight);
+  letter-spacing: var(--md-sys-typescale-display-large-tracking);
+}
+
+.md3-display-medium {
+  font-family: var(--md-sys-typescale-display-medium-font);
+  font-size: var(--md-sys-typescale-display-medium-size);
+  line-height: var(--md-sys-typescale-display-medium-line-height);
+  font-weight: var(--md-sys-typescale-display-medium-weight);
+  letter-spacing: var(--md-sys-typescale-display-medium-tracking);
+}
+
+.md3-display-small {
+  font-family: var(--md-sys-typescale-display-small-font);
+  font-size: var(--md-sys-typescale-display-small-size);
+  line-height: var(--md-sys-typescale-display-small-line-height);
+  font-weight: var(--md-sys-typescale-display-small-weight);
+  letter-spacing: var(--md-sys-typescale-display-small-tracking);
+}
+
+.md3-headline-large {
+  font-family: var(--md-sys-typescale-headline-large-font);
+  font-size: var(--md-sys-typescale-headline-large-size);
+  line-height: var(--md-sys-typescale-headline-large-line-height);
+  font-weight: var(--md-sys-typescale-headline-large-weight);
+  letter-spacing: var(--md-sys-typescale-headline-large-tracking);
+}
+
+.md3-headline-medium {
+  font-family: var(--md-sys-typescale-headline-medium-font);
+  font-size: var(--md-sys-typescale-headline-medium-size);
+  line-height: var(--md-sys-typescale-headline-medium-line-height);
+  font-weight: var(--md-sys-typescale-headline-medium-weight);
+  letter-spacing: var(--md-sys-typescale-headline-medium-tracking);
+}
+
+.md3-headline-small {
+  font-family: var(--md-sys-typescale-headline-small-font);
+  font-size: var(--md-sys-typescale-headline-small-size);
+  line-height: var(--md-sys-typescale-headline-small-line-height);
+  font-weight: var(--md-sys-typescale-headline-small-weight);
+  letter-spacing: var(--md-sys-typescale-headline-small-tracking);
+}
+
+.md3-title-large {
+  font-family: var(--md-sys-typescale-title-large-font);
+  font-size: var(--md-sys-typescale-title-large-size);
+  line-height: var(--md-sys-typescale-title-large-line-height);
+  font-weight: var(--md-sys-typescale-title-large-weight);
+  letter-spacing: var(--md-sys-typescale-title-large-tracking);
+}
+
+.md3-title-medium {
+  font-family: var(--md-sys-typescale-title-medium-font);
+  font-size: var(--md-sys-typescale-title-medium-size);
+  line-height: var(--md-sys-typescale-title-medium-line-height);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
+  letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+}
+
+.md3-title-small {
+  font-family: var(--md-sys-typescale-title-small-font);
+  font-size: var(--md-sys-typescale-title-small-size);
+  line-height: var(--md-sys-typescale-title-small-line-height);
+  font-weight: var(--md-sys-typescale-title-small-weight);
+  letter-spacing: var(--md-sys-typescale-title-small-tracking);
+}
+
+.md3-label-large {
+  font-family: var(--md-sys-typescale-label-large-font);
+  font-size: var(--md-sys-typescale-label-large-size);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  letter-spacing: var(--md-sys-typescale-label-large-tracking);
+}
+
+.md3-label-medium {
+  font-family: var(--md-sys-typescale-label-medium-font);
+  font-size: var(--md-sys-typescale-label-medium-size);
+  line-height: var(--md-sys-typescale-label-medium-line-height);
+  font-weight: var(--md-sys-typescale-label-medium-weight);
+  letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+}
+
+.md3-label-small {
+  font-family: var(--md-sys-typescale-label-small-font);
+  font-size: var(--md-sys-typescale-label-small-size);
+  line-height: var(--md-sys-typescale-label-small-line-height);
+  font-weight: var(--md-sys-typescale-label-small-weight);
+  letter-spacing: var(--md-sys-typescale-label-small-tracking);
+}
+
+.md3-body-large {
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  font-weight: var(--md-sys-typescale-body-large-weight);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+}
+
+.md3-body-medium {
+  font-family: var(--md-sys-typescale-body-medium-font);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+  font-weight: var(--md-sys-typescale-body-medium-weight);
+  letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+}
+
+.md3-body-small {
+  font-family: var(--md-sys-typescale-body-small-font);
+  font-size: var(--md-sys-typescale-body-small-size);
+  line-height: var(--md-sys-typescale-body-small-line-height);
+  font-weight: var(--md-sys-typescale-body-small-weight);
+  letter-spacing: var(--md-sys-typescale-body-small-tracking);
+}
+
+/* ========================================================================
+   BUTTONS - Material Design 3 Button Components
+   ======================================================================== */
+
+/* Base button styles */
+.md3-button {
+  /* Structure */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 24px;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+  text-decoration: none;
+  
+  /* Typography */
+  font-family: var(--md-sys-typescale-label-large-font);
+  font-size: var(--md-sys-typescale-label-large-size);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  letter-spacing: var(--md-sys-typescale-label-large-tracking);
+  
+  /* Shape */
+  border-radius: 20px;
+  
+  /* State */
+  position: relative;
+  overflow: hidden;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+/* Icon in button */
+.md3-button .material-icons {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* State layer */
+.md3-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: currentColor;
+  opacity: 0;
+  transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md3-button:hover::before {
+  opacity: var(--md-sys-state-hover-opacity);
+}
+
+.md3-button:focus-visible::before {
+  opacity: var(--md-sys-state-focus-opacity);
+}
+
+.md3-button:active::before {
+  opacity: var(--md-sys-state-pressed-opacity);
+}
+
+/* Filled button */
+.md3-button-filled {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.md3-button-filled:disabled {
+  background-color: rgba(var(--md-sys-color-on-surface-rgb), 0.12);
+  color: rgba(var(--md-sys-color-on-surface-rgb), 0.38);
+  cursor: not-allowed;
+}
+
+/* Outlined button */
+.md3-button-outlined {
+  background-color: transparent;
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-outline);
+}
+
+.md3-button-outlined:disabled {
+  border-color: rgba(var(--md-sys-color-on-surface-rgb), 0.12);
+  color: rgba(var(--md-sys-color-on-surface-rgb), 0.38);
+  cursor: not-allowed;
+}
+
+/* Text button */
+.md3-button-text {
+  background-color: transparent;
+  color: var(--md-sys-color-primary);
+  padding: 0 12px;
+}
+
+.md3-button-text:disabled {
+  color: rgba(var(--md-sys-color-on-surface-rgb), 0.38);
+  cursor: not-allowed;
+}
+
+/* Elevated button */
+.md3-button-elevated {
+  background-color: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-primary);
+  box-shadow: var(--md-sys-elevation-level1);
+}
+
+.md3-button-elevated:hover {
+  box-shadow: var(--md-sys-elevation-level2);
+}
+
+.md3-button-elevated:disabled {
+  background-color: rgba(var(--md-sys-color-on-surface-rgb), 0.12);
+  color: rgba(var(--md-sys-color-on-surface-rgb), 0.38);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Tonal button */
+.md3-button-tonal {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.md3-button-tonal:disabled {
+  background-color: rgba(var(--md-sys-color-on-surface-rgb), 0.12);
+  color: rgba(var(--md-sys-color-on-surface-rgb), 0.38);
+  cursor: not-allowed;
+}
+
+/* Icon button */
+.md3-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.md3-icon-button .material-icons {
+  font-size: 24px;
+}
+
+.md3-icon-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: currentColor;
+  opacity: 0;
+  transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md3-icon-button:hover::before {
+  opacity: var(--md-sys-state-hover-opacity);
+}
+
+.md3-icon-button:focus-visible::before {
+  opacity: var(--md-sys-state-focus-opacity);
+}
+
+.md3-icon-button:active::before {
+  opacity: var(--md-sys-state-pressed-opacity);
+}
+
+/* FAB - Floating Action Button */
+.md3-fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-large);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  box-shadow: var(--md-sys-elevation-level3);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.md3-fab:hover {
+  box-shadow: var(--md-sys-elevation-level4);
+}
+
+.md3-fab:active {
+  box-shadow: var(--md-sys-elevation-level3);
+}
+
+.md3-fab .material-icons {
+  font-size: 24px;
+}
+
+.md3-fab-extended {
+  width: auto;
+  padding: 0 20px;
+  gap: 12px;
+  font-family: var(--md-sys-typescale-label-large-font);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  letter-spacing: var(--md-sys-typescale-label-large-tracking);
+}
+
+.md3-fab-small {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+
+.md3-fab-large {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--md-sys-shape-corner-extra-large);
+}
+
+.md3-fab-large .material-icons {
+  font-size: 36px;
+}
+
+/* ========================================================================
+   CARDS - Material Design 3 Card Components
+   ======================================================================== */
+
+.md3-card {
+  background-color: var(--md-sys-color-surface-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+  overflow: hidden;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.md3-card-elevated {
+  background-color: var(--md-sys-color-surface-container-low);
+  box-shadow: var(--md-sys-elevation-level1);
+}
+
+.md3-card-elevated:hover {
+  box-shadow: var(--md-sys-elevation-level2);
+}
+
+.md3-card-filled {
+  background-color: var(--md-sys-color-surface-variant);
+  box-shadow: none;
+}
+
+.md3-card-outlined {
+  background-color: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  box-shadow: none;
+}
+
+/* Card content areas */
+.md3-card-header {
+  padding: 16px;
+}
+
+.md3-card-media {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.md3-card-content {
+  padding: 16px;
+}
+
+.md3-card-actions {
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Card typography */
+.md3-card-title {
+  font-family: var(--md-sys-typescale-headline-small-font);
+  font-size: var(--md-sys-typescale-headline-small-size);
+  line-height: var(--md-sys-typescale-headline-small-line-height);
+  font-weight: var(--md-sys-typescale-headline-small-weight);
+  letter-spacing: var(--md-sys-typescale-headline-small-tracking);
+  color: var(--md-sys-color-on-surface);
+  margin: 0 0 8px 0;
+}
+
+.md3-card-subtitle {
+  font-family: var(--md-sys-typescale-title-medium-font);
+  font-size: var(--md-sys-typescale-title-medium-size);
+  line-height: var(--md-sys-typescale-title-medium-line-height);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
+  letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 0 0 8px 0;
+}
+
+.md3-card-supporting-text {
+  font-family: var(--md-sys-typescale-body-medium-font);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+  font-weight: var(--md-sys-typescale-body-medium-weight);
+  letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ========================================================================
+   TEXT FIELDS - Material Design 3 Input Components
+   ======================================================================== */
+
+.md3-text-field {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.md3-text-field-input {
+  width: 100%;
+  height: 56px;
+  padding: 20px 16px 8px 16px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.md3-text-field-input:hover {
+  border-color: var(--md-sys-color-on-surface);
+}
+
+.md3-text-field-input:focus {
+  outline: none;
+  border-width: 2px;
+  border-color: var(--md-sys-color-primary);
+  padding: 19px 15px 7px 15px;
+}
+
+.md3-text-field-label {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  pointer-events: none;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.md3-text-field-input:focus + .md3-text-field-label,
+.md3-text-field-input:not(:placeholder-shown) + .md3-text-field-label {
+  top: 8px;
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-primary);
+}
+
+.md3-text-field-helper {
+  margin-top: 4px;
+  padding: 0 16px;
+  font-family: var(--md-sys-typescale-body-small-font);
+  font-size: var(--md-sys-typescale-body-small-size);
+  line-height: var(--md-sys-typescale-body-small-line-height);
+  letter-spacing: var(--md-sys-typescale-body-small-tracking);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.md3-text-field-error .md3-text-field-input {
+  border-color: var(--md-sys-color-error);
+}
+
+.md3-text-field-error .md3-text-field-label {
+  color: var(--md-sys-color-error);
+}
+
+.md3-text-field-error .md3-text-field-helper {
+  color: var(--md-sys-color-error);
+}
+
+/* ========================================================================
+   CHIPS - Material Design 3 Chip Components
+   ======================================================================== */
+
+.md3-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 16px;
+  gap: 8px;
+  border-radius: var(--md-sys-shape-corner-small);
+  background-color: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: var(--md-sys-typescale-label-large-font);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  letter-spacing: var(--md-sys-typescale-label-large-tracking);
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.md3-chip:hover {
+  background-color: var(--md-sys-color-on-surface);
+  background-color: rgba(var(--md-sys-color-on-surface-rgb), 0.12);
+}
+
+.md3-chip-selected {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.md3-chip .material-icons {
+  font-size: 18px;
+}
+
+/* ========================================================================
+   NAVIGATION - Material Design 3 Navigation Components
+   ======================================================================== */
+
+/* Top App Bar */
+.md3-top-app-bar {
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  box-shadow: var(--md-sys-elevation-level0);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.md3-top-app-bar-container {
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+  padding: 0 16px;
+}
+
+.md3-top-app-bar-title {
+  flex: 1;
+  font-family: var(--md-sys-typescale-title-large-font);
+  font-size: var(--md-sys-typescale-title-large-size);
+  line-height: var(--md-sys-typescale-title-large-line-height);
+  font-weight: var(--md-sys-typescale-title-large-weight);
+  letter-spacing: var(--md-sys-typescale-title-large-tracking);
+  margin: 0;
+}
+
+/* Navigation Rail */
+.md3-navigation-rail {
+  width: 80px;
+  background-color: var(--md-sys-color-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.md3-navigation-rail-item {
+  width: 64px;
+  height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: var(--md-sys-shape-corner-large);
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.md3-navigation-rail-item:hover {
+  background-color: rgba(var(--md-sys-color-on-surface-rgb), 0.08);
+}
+
+.md3-navigation-rail-item-active {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.md3-navigation-rail-item .material-icons {
+  font-size: 24px;
+}
+
+.md3-navigation-rail-item-label {
+  font-family: var(--md-sys-typescale-label-small-font);
+  font-size: var(--md-sys-typescale-label-small-size);
+  font-weight: var(--md-sys-typescale-label-small-weight);
+  letter-spacing: var(--md-sys-typescale-label-small-tracking);
+}
+
+/* ========================================================================
+   DIALOGS - Material Design 3 Dialog Components
+   ======================================================================== */
+
+.md3-dialog-scrim {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.md3-dialog {
+  background-color: var(--md-sys-color-surface-container-high);
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  box-shadow: var(--md-sys-elevation-level3);
+  min-width: 280px;
+  max-width: 560px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.md3-dialog-header {
+  padding: 24px 24px 16px 24px;
+}
+
+.md3-dialog-title {
+  font-family: var(--md-sys-typescale-headline-small-font);
+  font-size: var(--md-sys-typescale-headline-small-size);
+  line-height: var(--md-sys-typescale-headline-small-line-height);
+  font-weight: var(--md-sys-typescale-headline-small-weight);
+  letter-spacing: var(--md-sys-typescale-headline-small-tracking);
+  color: var(--md-sys-color-on-surface);
+  margin: 0;
+}
+
+.md3-dialog-content {
+  padding: 0 24px 24px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.md3-dialog-actions {
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* ========================================================================
+   SNACKBAR - Material Design 3 Snackbar Components
+   ======================================================================== */
+
+.md3-snackbar {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  max-width: 672px;
+  margin: 0 auto;
+  background-color: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  box-shadow: var(--md-sys-elevation-level3);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--md-sys-typescale-body-medium-font);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+  z-index: 900;
+}
+
+.md3-snackbar-action {
+  color: var(--md-sys-color-inverse-primary);
+  font-family: var(--md-sys-typescale-label-large-font);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  letter-spacing: var(--md-sys-typescale-label-large-tracking);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  transition: background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md3-snackbar-action:hover {
+  background-color: rgba(var(--md-sys-color-inverse-primary-rgb), 0.08);
+}
+
+/* ========================================================================
+   UTILITY CLASSES
+   ======================================================================== */
+
+/* Elevation utilities */
+.md3-elevation-0 { box-shadow: var(--md-sys-elevation-level0); }
+.md3-elevation-1 { box-shadow: var(--md-sys-elevation-level1); }
+.md3-elevation-2 { box-shadow: var(--md-sys-elevation-level2); }
+.md3-elevation-3 { box-shadow: var(--md-sys-elevation-level3); }
+.md3-elevation-4 { box-shadow: var(--md-sys-elevation-level4); }
+.md3-elevation-5 { box-shadow: var(--md-sys-elevation-level5); }
+
+/* Color utilities */
+.md3-primary { color: var(--md-sys-color-primary); }
+.md3-on-primary { color: var(--md-sys-color-on-primary); }
+.md3-secondary { color: var(--md-sys-color-secondary); }
+.md3-error { color: var(--md-sys-color-error); }
+.md3-success { color: var(--md-sys-color-success); }
+.md3-warning { color: var(--md-sys-color-warning); }
+
+/* Surface utilities */
+.md3-surface { background-color: var(--md-sys-color-surface); }
+.md3-surface-variant { background-color: var(--md-sys-color-surface-variant); }
+.md3-surface-container { background-color: var(--md-sys-color-surface-container); }
+.md3-surface-container-low { background-color: var(--md-sys-color-surface-container-low); }
+.md3-surface-container-high { background-color: var(--md-sys-color-surface-container-high); }
+.md3-surface-container-highest { background-color: var(--md-sys-color-surface-container-highest); }
+
+/* Spacing utilities */
+.md3-p-0 { padding: 0; }
+.md3-p-1 { padding: 4px; }
+.md3-p-2 { padding: 8px; }
+.md3-p-3 { padding: 12px; }
+.md3-p-4 { padding: 16px; }
+.md3-p-5 { padding: 20px; }
+.md3-p-6 { padding: 24px; }
+
+.md3-m-0 { margin: 0; }
+.md3-m-1 { margin: 4px; }
+.md3-m-2 { margin: 8px; }
+.md3-m-3 { margin: 12px; }
+.md3-m-4 { margin: 16px; }
+.md3-m-5 { margin: 20px; }
+.md3-m-6 { margin: 24px; }
+
+/* Gap utilities for flexbox */
+.md3-gap-1 { gap: 4px; }
+.md3-gap-2 { gap: 8px; }
+.md3-gap-3 { gap: 12px; }
+.md3-gap-4 { gap: 16px; }
+.md3-gap-5 { gap: 20px; }
+.md3-gap-6 { gap: 24px; }
+
+/* Display utilities */
+.md3-flex { display: flex; }
+.md3-inline-flex { display: inline-flex; }
+.md3-flex-column { flex-direction: column; }
+.md3-flex-row { flex-direction: row; }
+.md3-align-center { align-items: center; }
+.md3-justify-center { justify-content: center; }
+.md3-justify-between { justify-content: space-between; }
+.md3-justify-end { justify-content: flex-end; }
+.md3-flex-1 { flex: 1; }
+
+/* Text alignment */
+.md3-text-center { text-align: center; }
+.md3-text-left { text-align: left; }
+.md3-text-right { text-align: right; }
+
+/* Border radius utilities */
+.md3-rounded-none { border-radius: var(--md-sys-shape-corner-none); }
+.md3-rounded-xs { border-radius: var(--md-sys-shape-corner-extra-small); }
+.md3-rounded-sm { border-radius: var(--md-sys-shape-corner-small); }
+.md3-rounded-md { border-radius: var(--md-sys-shape-corner-medium); }
+.md3-rounded-lg { border-radius: var(--md-sys-shape-corner-large); }
+.md3-rounded-xl { border-radius: var(--md-sys-shape-corner-extra-large); }
+.md3-rounded-full { border-radius: var(--md-sys-shape-corner-full); }

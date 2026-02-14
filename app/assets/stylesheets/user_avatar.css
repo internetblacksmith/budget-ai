@@ -1,0 +1,188 @@
+/* User Avatar and Menu Styles */
+.user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.user-avatar-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-avatar-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--md-sys-color-primary-container);
+}
+
+.user-avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--md-sys-color-primary);
+  color: var(--md-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  user-select: none;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--md-sys-color-surface-container);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  min-width: 240px;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-info {
+  padding: 16px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 4px;
+}
+
+.user-email {
+  font-size: 12px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--md-outline-variant);
+  margin: 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--md-sys-color-on-surface);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.dropdown-item:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.dropdown-item .material-icons {
+  font-size: 20px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.dropdown-item.logout-item {
+  color: var(--md-sys-color-error);
+}
+
+.dropdown-item.logout-item .material-icons {
+  color: var(--md-sys-color-error);
+}
+
+/* Update app bar layout */
+.md-app-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: nowrap;
+}
+
+.md-app-bar-container nav {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Ensure navbar links stay on one line */
+.md-app-bar-container .md3-button-text {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Fix navbar layout for proper alignment */
+.md-app-bar {
+  width: 100%;
+}
+
+.md-app-bar-container > * {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .user-avatar,
+  .user-avatar-placeholder {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .md-app-bar-container {
+    padding: 0 8px;
+  }
+  
+  .md-app-bar-title {
+    font-size: 18px;
+    margin-right: 12px;
+  }
+  
+  .md-app-bar-container nav {
+    display: none; /* Hide nav links on mobile, can be replaced with hamburger menu */
+  }
+  
+  .user-dropdown {
+    right: -8px;
+    min-width: 200px;
+  }
+  
+  .dropdown-item {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}

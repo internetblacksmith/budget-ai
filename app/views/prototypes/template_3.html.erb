@@ -1,0 +1,566 @@
+<% content_for(:title) { "Budget AI — Import" } %>
+
+<% content_for(:fonts) do %>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<% end %>
+
+<% content_for(:styles) do %>
+<style>
+  :root {
+    --bg: #0f0f12;
+    --surface: #18181e;
+    --surface-2: #1f1f28;
+    --border: #2a2a36;
+    --text: #eeeef0;
+    --text-dim: #6e6e7a;
+    --accent: #818cf8;
+    --accent-bright: #a5b4fc;
+    --accent-glow: rgba(129, 140, 248, 0.12);
+    --green: #34d399;
+    --green-dim: rgba(52, 211, 153, 0.12);
+    --orange: #fb923c;
+    --orange-dim: rgba(251, 146, 60, 0.12);
+    --red: #f87171;
+    --red-dim: rgba(248, 113, 113, 0.12);
+  }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Subtle grid pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Nav */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 16px 48px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+
+  .nav-logo {
+    font-weight: 700;
+    font-size: 18px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-bright));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .nav-links { display: flex; gap: 4px; margin-left: 16px; }
+
+  .nav-link {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .nav-link:hover { color: var(--text); background: var(--surface-2); }
+  .nav-link.active { color: var(--accent-bright); background: var(--accent-glow); }
+
+  /* Layout */
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .page-header { text-align: center; margin-bottom: 48px; }
+
+  .page-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .page-title {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+
+  .page-desc {
+    font-size: 15px;
+    color: var(--text-dim);
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Stepper */
+  .stepper {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 48px;
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    position: relative;
+  }
+
+  .step::after {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+    margin-left: 10px;
+  }
+
+  .step:last-child::after { display: none; }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .step.active .step-num {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  .step.active { color: var(--text); }
+
+  .step.done .step-num {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+
+  .step.done { color: var(--green); }
+
+  /* Connection Card */
+  .connect-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .connect-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-bright), var(--green));
+  }
+
+  .connect-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 32px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .connect-status.connected {
+    background: var(--green-dim);
+    color: var(--green);
+  }
+
+  .connect-status .material-icons { font-size: 20px; }
+
+  /* Select fields */
+  .select-group {
+    margin-bottom: 24px;
+  }
+
+  .select-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .select-field {
+    width: 100%;
+    padding: 14px 18px;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236e6e7a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+  }
+
+  .select-field:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .select-field option {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+
+  /* Import button */
+  .import-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    background: linear-gradient(135deg, var(--accent), #6366f1);
+    color: white;
+    box-shadow: 0 4px 24px rgba(129, 140, 248, 0.25);
+  }
+
+  .import-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 32px rgba(129, 140, 248, 0.35);
+  }
+
+  .import-btn:active { transform: translateY(0); }
+
+  .import-btn .material-icons { font-size: 20px; }
+
+  /* Progress simulation */
+  .progress-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-top: 24px;
+  }
+
+  .progress-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .progress-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .progress-icon.running {
+    background: var(--accent-glow);
+    color: var(--accent-bright);
+  }
+
+  .progress-icon.done {
+    background: var(--green-dim);
+    color: var(--green);
+  }
+
+  .progress-icon.error {
+    background: var(--red-dim);
+    color: var(--red);
+  }
+
+  .progress-title { font-weight: 600; font-size: 15px; }
+  .progress-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+
+  .progress-bar-track {
+    height: 6px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    transition: width 0.5s ease;
+  }
+
+  .progress-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .progress-stat {
+    text-align: center;
+    padding: 16px;
+    background: var(--surface-2);
+    border-radius: 12px;
+  }
+
+  .progress-stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .progress-stat-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Recent imports */
+  .recent-section { margin-top: 48px; }
+  .recent-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+
+  .recent-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    transition: border-color 0.15s;
+  }
+
+  .recent-item:hover { border-color: var(--accent); }
+
+  .recent-left { display: flex; align-items: center; gap: 12px; }
+
+  .recent-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .recent-name { font-weight: 500; font-size: 14px; }
+  .recent-meta { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+  .recent-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 100px;
+  }
+
+  .badge-success { background: var(--green-dim); color: var(--green); }
+  .badge-warning { background: var(--orange-dim); color: var(--orange); }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .connect-card { animation: fadeIn 0.5s ease-out 0.1s both; }
+  .progress-card { animation: fadeIn 0.5s ease-out 0.2s both; }
+  .recent-section { animation: fadeIn 0.5s ease-out 0.3s both; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .running .material-icons { animation: pulse 2s ease-in-out infinite; }
+
+  @media (max-width: 640px) {
+    .page { padding: 32px 20px; }
+    .connect-card { padding: 24px; }
+    .stepper { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .step::after { display: none; }
+    .progress-stats { grid-template-columns: 1fr; }
+  }
+</style>
+<% end %>
+
+<!-- Nav -->
+<nav class="nav-bar">
+  <span class="nav-logo">Budget AI</span>
+  <div class="nav-links">
+    <a href="<%= prototype_path(1) %>" class="nav-link">Dashboard</a>
+    <a href="<%= prototype_path(2) %>" class="nav-link">Transactions</a>
+    <a href="#" class="nav-link active">Import</a>
+    <a href="<%= prototype_path(4) %>" class="nav-link">Insights</a>
+    <a href="<%= prototype_path(5) %>" class="nav-link">Accounts</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-label">Import</div>
+    <h1 class="page-title">Import Transactions</h1>
+    <p class="page-desc">
+      Connect to Emma via Google Sheets and import all your bank transactions in one go.
+    </p>
+  </div>
+
+  <!-- Stepper -->
+  <div class="stepper">
+    <div class="step done">
+      <span class="step-num"><span class="material-icons" style="font-size: 16px;">check</span></span>
+      Connect
+    </div>
+    <div class="step active">
+      <span class="step-num">2</span>
+      Select
+    </div>
+    <div class="step">
+      <span class="step-num">3</span>
+      Import
+    </div>
+  </div>
+
+  <!-- Connection Card -->
+  <div class="connect-card">
+    <div class="connect-status connected">
+      <span class="material-icons">check_circle</span>
+      Connected as user@example.com
+    </div>
+
+    <div class="select-group">
+      <label class="select-label">Spreadsheet</label>
+      <select class="select-field">
+        <option>Emma Export — February 2026</option>
+        <option>Emma Export — January 2026</option>
+        <option>Emma Export — December 2025</option>
+      </select>
+    </div>
+
+    <div class="select-group">
+      <label class="select-label">Sheet</label>
+      <select class="select-field">
+        <option>Transactions</option>
+        <option>Summary</option>
+      </select>
+    </div>
+
+    <button class="import-btn">
+      <span class="material-icons">rocket_launch</span>
+      Start Import
+    </button>
+  </div>
+
+  <!-- Progress Card (shows during/after import) -->
+  <div class="progress-card">
+    <div class="progress-header">
+      <div class="progress-icon done">
+        <span class="material-icons">check_circle</span>
+      </div>
+      <div>
+        <div class="progress-title">Import Complete</div>
+        <div class="progress-subtitle">Finished in 4.2 seconds</div>
+      </div>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" style="width: 100%"></div>
+    </div>
+    <div class="progress-stats">
+      <div class="progress-stat">
+        <div class="progress-stat-value" style="color: var(--green);">342</div>
+        <div class="progress-stat-label">Imported</div>
+      </div>
+      <div class="progress-stat">
+        <div class="progress-stat-value" style="color: var(--orange);">18</div>
+        <div class="progress-stat-label">Duplicates</div>
+      </div>
+      <div class="progress-stat">
+        <div class="progress-stat-value" style="color: var(--text-dim);">0</div>
+        <div class="progress-stat-label">Errors</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Imports -->
+  <div class="recent-section">
+    <div class="recent-title">Recent Imports</div>
+    <% [
+      { name: 'Emma Export — January 2026', meta: 'Jan 31 · 289 transactions', status: 'success', label: 'Completed' },
+      { name: 'Emma Export — December 2025', meta: 'Jan 2 · 312 transactions', status: 'success', label: 'Completed' },
+      { name: 'Emma Export — November 2025', meta: 'Dec 1 · 274 transactions', status: 'warning', label: '3 warnings' }
+    ].each do |imp| %>
+      <div class="recent-item">
+        <div class="recent-left">
+          <div class="recent-icon" style="background: var(--accent-glow); color: var(--accent-bright);">
+            <span class="material-icons" style="font-size: 18px;">description</span>
+          </div>
+          <div>
+            <div class="recent-name"><%= imp[:name] %></div>
+            <div class="recent-meta"><%= imp[:meta] %></div>
+          </div>
+        </div>
+        <span class="recent-badge badge-<%= imp[:status] %>"><%= imp[:label] %></span>
+      </div>
+    <% end %>
+  </div>
+</div>

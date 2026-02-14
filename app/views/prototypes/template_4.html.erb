@@ -1,0 +1,513 @@
+<% content_for(:title) { "Budget AI — AI Insights" } %>
+
+<% content_for(:fonts) do %>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<% end %>
+
+<% content_for(:styles) do %>
+<style>
+  :root {
+    --bg: #fdfcfa;
+    --surface: #ffffff;
+    --surface-warm: #faf6f0;
+    --border: #e8e2d8;
+    --text: #1c1917;
+    --text-dim: #78716c;
+    --accent: #9333ea;
+    --accent-light: #f3e8ff;
+    --accent-mid: #c084fc;
+    --green: #16a34a;
+    --red: #dc2626;
+    --blue: #2563eb;
+    --amber: #d97706;
+  }
+
+  body {
+    font-family: 'Figtree', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Grain texture */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Nav */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 20px 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 22px;
+  }
+
+  .nav-links { display: flex; gap: 4px; margin-left: auto; }
+
+  .nav-link {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .nav-link:hover { color: var(--text); }
+  .nav-link.active { color: var(--accent); background: var(--accent-light); }
+
+  /* Page */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 48px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 40px 0 48px;
+    position: relative;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: var(--accent-light);
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* AI Chat Card */
+  .ai-chat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.04);
+    margin-bottom: 40px;
+  }
+
+  .ai-chat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-warm);
+  }
+
+  .ai-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+  }
+
+  .ai-name { font-weight: 600; font-size: 15px; }
+  .ai-status { font-size: 12px; color: var(--green); display: flex; align-items: center; gap: 4px; }
+  .ai-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  .ai-messages {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .ai-msg {
+    display: flex;
+    gap: 14px;
+    max-width: 85%;
+  }
+
+  .ai-msg.from-ai { align-self: flex-start; }
+  .ai-msg.from-user { align-self: flex-end; flex-direction: row-reverse; }
+
+  .msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .msg-avatar.ai {
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    color: white;
+  }
+
+  .msg-avatar.user {
+    background: var(--text);
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  .msg-bubble {
+    padding: 16px 20px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .from-ai .msg-bubble {
+    background: var(--surface-warm);
+    border-bottom-left-radius: 4px;
+  }
+
+  .from-user .msg-bubble {
+    background: var(--text);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg-bubble strong { font-weight: 600; }
+
+  .msg-bubble .insight-highlight {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    margin: 2px 0;
+  }
+
+  .highlight-green { background: rgba(22, 163, 74, 0.1); color: var(--green); }
+  .highlight-red { background: rgba(220, 38, 38, 0.1); color: var(--red); }
+  .highlight-amber { background: rgba(217, 119, 6, 0.1); color: var(--amber); }
+
+  .ai-input-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 28px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-warm);
+  }
+
+  .ai-input {
+    flex: 1;
+    padding: 12px 18px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  .ai-input:focus { outline: none; border-color: var(--accent); }
+  .ai-input::placeholder { color: var(--text-dim); }
+
+  .ai-send {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s;
+  }
+
+  .ai-send:hover { transform: scale(1.05); }
+
+  /* Insight Cards */
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .insight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .insight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
+
+  .insight-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  .insight-card:nth-child(1)::before { background: var(--accent); }
+  .insight-card:nth-child(2)::before { background: var(--green); }
+  .insight-card:nth-child(3)::before { background: var(--blue); }
+
+  .insight-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .insight-card:nth-child(1) .insight-icon { background: var(--accent-light); color: var(--accent); }
+  .insight-card:nth-child(2) .insight-icon { background: rgba(22, 163, 74, 0.1); color: var(--green); }
+  .insight-card:nth-child(3) .insight-icon { background: rgba(37, 99, 235, 0.1); color: var(--blue); }
+
+  .insight-card-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .insight-card-desc {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Pattern Cards */
+  .pattern-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .patterns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .pattern-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .pattern-card:hover { border-color: var(--accent); }
+
+  .pattern-emoji { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+
+  .pattern-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .pattern-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero { animation: fadeUp 0.6s ease-out; }
+  .ai-chat { animation: fadeUp 0.6s ease-out 0.15s both; }
+  .insight-card:nth-child(1) { animation: fadeUp 0.5s ease-out 0.25s both; }
+  .insight-card:nth-child(2) { animation: fadeUp 0.5s ease-out 0.3s both; }
+  .insight-card:nth-child(3) { animation: fadeUp 0.5s ease-out 0.35s both; }
+
+  @keyframes typeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .ai-msg:nth-child(1) { animation: fadeUp 0.4s ease-out 0.3s both; }
+  .ai-msg:nth-child(2) { animation: fadeUp 0.4s ease-out 0.5s both; }
+  .ai-msg:nth-child(3) { animation: fadeUp 0.4s ease-out 0.7s both; }
+
+  @media (max-width: 768px) {
+    .page { padding: 20px; }
+    .hero-title { font-size: 32px; }
+    .insights-grid { grid-template-columns: 1fr; }
+    .patterns { grid-template-columns: 1fr; }
+    .nav-bar { padding: 16px 20px; }
+    .nav-links { display: none; }
+  }
+</style>
+<% end %>
+
+<!-- Nav -->
+<nav class="nav-bar">
+  <span class="nav-logo">Budget AI</span>
+  <div class="nav-links">
+    <a href="<%= prototype_path(1) %>" class="nav-link">Dashboard</a>
+    <a href="<%= prototype_path(2) %>" class="nav-link">Transactions</a>
+    <a href="<%= prototype_path(3) %>" class="nav-link">Import</a>
+    <a href="#" class="nav-link active">Insights</a>
+    <a href="<%= prototype_path(5) %>" class="nav-link">Accounts</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="hero">
+    <div class="hero-badge">
+      <span class="material-icons" style="font-size: 14px;">auto_awesome</span>
+      AI-Powered
+    </div>
+    <h1 class="hero-title">Understand your money<br>with <em>intelligence</em></h1>
+    <p class="hero-desc">
+      Ask questions about your spending, get personalized budgets, and discover patterns you never knew existed.
+    </p>
+  </div>
+
+  <!-- AI Chat -->
+  <div class="ai-chat">
+    <div class="ai-chat-header">
+      <div class="ai-avatar"><span class="material-icons">auto_awesome</span></div>
+      <div>
+        <div class="ai-name">Budget AI Assistant</div>
+        <div class="ai-status">Online</div>
+      </div>
+    </div>
+
+    <div class="ai-messages">
+      <div class="ai-msg from-user">
+        <div class="msg-avatar user">P</div>
+        <div class="msg-bubble">How did my spending change this month compared to January?</div>
+      </div>
+
+      <div class="ai-msg from-ai">
+        <div class="msg-avatar ai"><span class="material-icons" style="font-size:16px">auto_awesome</span></div>
+        <div class="msg-bubble">
+          Your total spending in February is <span class="insight-highlight highlight-green">&pound;2,847</span>
+          which is <span class="insight-highlight highlight-green">12% lower</span> than January's &pound;3,235.
+          <br><br>
+          Key changes:<br>
+          &bull; <strong>Dining out</strong> dropped by <span class="insight-highlight highlight-green">&minus;34%</span> — great job!<br>
+          &bull; <strong>Groceries</strong> went up <span class="insight-highlight highlight-red">+18%</span> — likely shifted from eating out<br>
+          &bull; <strong>Subscriptions</strong> have a new <span class="insight-highlight highlight-amber">&pound;14.99</span> charge from Apple One
+        </div>
+      </div>
+
+      <div class="ai-msg from-ai">
+        <div class="msg-avatar ai"><span class="material-icons" style="font-size:16px">auto_awesome</span></div>
+        <div class="msg-bubble">
+          <strong>Suggestion:</strong> Your savings rate this month is 33% — above your 30% target.
+          Consider moving the extra &pound;127 into your savings pot.
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-input-bar">
+      <input type="text" class="ai-input" placeholder="Ask about your finances...">
+      <button class="ai-send"><span class="material-icons">arrow_upward</span></button>
+    </div>
+  </div>
+
+  <!-- Quick Insight Cards -->
+  <div class="insights-grid">
+    <div class="insight-card">
+      <div class="insight-icon"><span class="material-icons">analytics</span></div>
+      <div class="insight-card-title">Spending Analysis</div>
+      <div class="insight-card-desc">Deep dive into where your money goes each month with category breakdowns.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon"><span class="material-icons">savings</span></div>
+      <div class="insight-card-title">Budget Planner</div>
+      <div class="insight-card-desc">AI-generated budget based on your actual habits, not generic advice.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon"><span class="material-icons">category</span></div>
+      <div class="insight-card-title">Auto-Categorize</div>
+      <div class="insight-card-desc">Let AI classify uncategorized transactions using your spending history.</div>
+    </div>
+  </div>
+
+  <!-- Detected Patterns -->
+  <h2 class="pattern-section-title">Detected Patterns</h2>
+  <div class="patterns">
+    <% [
+      { emoji: '📅', name: 'Weekend Splurge', desc: 'You spend 2.4x more on Saturdays than weekdays. Dining and entertainment peak on Friday-Saturday.' },
+      { emoji: '🔄', name: 'Recurring Charges', desc: '8 recurring subscriptions totalling £89.93/month. Netflix, Spotify, Apple One, gym, and 4 more.' },
+      { emoji: '📈', name: 'Grocery Creep', desc: 'Grocery spending has increased 12% month-over-month for 3 consecutive months.' },
+      { emoji: '☕', name: 'Coffee Habit', desc: 'You visit Pret/Costa 4.2 times per week averaging £4.30 each. That\'s ~£74/month.' }
+    ].each do |p| %>
+      <div class="pattern-card">
+        <span class="pattern-emoji"><%= p[:emoji] %></span>
+        <div>
+          <div class="pattern-name"><%= p[:name] %></div>
+          <div class="pattern-desc"><%= p[:desc] %></div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

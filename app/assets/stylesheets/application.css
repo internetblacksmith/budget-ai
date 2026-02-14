@@ -1,0 +1,27 @@
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+
+/* Import Material Design 3 system */
+@import url('material-design-3.css');
+@import url('md3-data-tables.css');
+@import url('sidebar.css');
+@import url('dashboard.css');
+@import url('insights.css');
+@import url('transactions.css');
+@import url('imports.css');
+@import url('custom-select.css');
+@import url('dark-theme.css');
+
+/* Import component-specific styles */
+@import url('onboarding.css');
+@import url('toast.css');
+@import url('user_avatar.css');
+

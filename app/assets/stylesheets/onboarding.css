@@ -1,0 +1,195 @@
+/* 
+ * Onboarding Flow Styles
+ * Using Material Design 3 tokens and components
+ */
+.onboarding-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--md-sys-color-surface) 0%, var(--md-sys-color-surface-variant) 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.onboarding-header {
+  padding: 2rem;
+  background: var(--md-sys-color-surface);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.progress-indicator {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.steps-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 50%;
+  background: var(--md-sys-color-surface-variant);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  flex-shrink: 0;
+}
+
+.step-item.active .step-circle {
+  background: var(--md-sys-color-primary);
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.15), 0 2px 4px 0 rgba(0,0,0,0.1);
+  transform: scale(1.1);
+}
+
+.step-item.completed .step-circle {
+  background: var(--md-sys-color-tertiary);
+}
+
+.step-number {
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.1px;
+}
+
+.step-item.active .step-number {
+  color: var(--md-sys-color-on-primary);
+  font-weight: 600;
+}
+
+.step-item.completed .step-number {
+  color: var(--md-sys-color-on-tertiary);
+}
+
+.step-item.completed .step-number {
+  display: none;
+}
+
+.step-check {
+  display: none;
+  color: var(--md-sys-color-on-tertiary);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.step-item.completed .step-check {
+  display: block;
+}
+
+.step-label {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 500;
+  white-space: nowrap;
+  margin-top: 4px;
+}
+
+.step-item.active .step-label {
+  color: var(--md-sys-color-on-surface);
+  font-weight: 500;
+}
+
+.step-connector {
+  width: 60px;
+  height: 1px;
+  background: var(--md-sys-color-outline-variant);
+  position: relative;
+  margin: 0 -8px;
+  margin-bottom: 24px;
+}
+
+.step-connector::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--md-sys-color-primary);
+  transition: width 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.step-item.completed + .step-connector::after {
+  width: 100%;
+}
+
+.progress-bar {
+  height: 4px;
+  background: var(--md-sys-color-surface-variant);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--md-sys-color-primary);
+  transition: width 0.3s cubic-bezier(0.2, 0, 0, 1);
+  border-radius: 2px;
+}
+
+.onboarding-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Common onboarding form styles */
+.section-icon {
+  margin-bottom: 1.5rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .steps-container {
+    gap: 0.5rem;
+  }
+  
+  .step-circle {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+  
+  .step-connector {
+    width: 40px;
+    margin: 0 -4px;
+  }
+  
+  .step-label {
+    font-size: 10px;
+  }
+  
+  .onboarding-header {
+    padding: 1rem;
+  }
+}

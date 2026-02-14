@@ -1,0 +1,176 @@
+/*
+ * Dark Theme for Budget AI
+ * Dark is the only theme — styles apply unconditionally.
+ */
+
+/* Better contrast for cards */
+.md3-card {
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+/* Improve input field visibility */
+.md3-text-field-input {
+  background: #1e2d28;
+  border: 1px solid #2a3f38;
+  color: #e8f0ec;
+}
+
+.md3-text-field-input:focus {
+  background: #263832;
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 229, 160, 0.2);
+  color: #e8f0ec;
+}
+
+.md3-text-field-input:hover:not(:focus) {
+  background: #223530;
+  border-color: #3a5f50;
+}
+
+.md3-text-field-input::placeholder {
+  color: #7a9a8e;
+  opacity: 1;
+}
+
+/* Select dropdowns and form controls */
+select, textarea, input[type="text"], input[type="email"],
+input[type="password"], input[type="number"], input[type="date"],
+input[type="search"], input[type="tel"], input[type="url"] {
+  background: #1e2d28 !important;
+  border: 1px solid #2a3f38 !important;
+  color: #e8f0ec !important;
+}
+
+select:focus, textarea:focus, input:focus {
+  background: #263832 !important;
+  border-color: var(--md-sys-color-primary) !important;
+  outline: 2px solid rgba(0, 229, 160, 0.3) !important;
+  color: #e8f0ec !important;
+}
+
+select option {
+  background: #1e2d28;
+  color: #e8f0ec;
+}
+
+/* Labels */
+label, .form-label {
+  color: #e8f0ec !important;
+}
+
+/* File input */
+input[type="file"] {
+  background: #1e2d28;
+  color: #e8f0ec;
+  border: 1px solid #2a3f38;
+  padding: 0.5rem;
+}
+
+/* Disabled inputs */
+input:disabled, select:disabled, textarea:disabled,
+.md3-text-field-input:disabled {
+  background: #111916 !important;
+  color: #5a7a6e !important;
+  border-color: #1e2d28 !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Checkbox and radio buttons */
+input[type="checkbox"], input[type="radio"] {
+  accent-color: var(--md-sys-color-primary);
+  background: #1e2d28;
+}
+
+/* Data tables */
+.md3-data-table {
+  background: var(--md-sys-color-surface-container);
+}
+
+.md3-data-table thead {
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.md3-data-table tbody tr:hover {
+  background: var(--md-sys-color-surface-container-highest);
+}
+
+/* Toast notifications */
+.toast {
+  backdrop-filter: blur(12px);
+}
+
+.toast-success {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+}
+
+.toast-error {
+  background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
+}
+
+.toast-warning {
+  background: linear-gradient(135deg, #ff6f00 0%, #ff9800 100%);
+  color: #000000;
+  font-weight: 500;
+}
+
+.toast-info {
+  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+}
+
+/* Warning and alert boxes */
+.warning-box, .alert-box, .md-snackbar-alert {
+  background: #4a2c00;
+  border-color: #ff9800;
+  color: #ffcc80;
+}
+
+.warning-box .material-icons,
+.alert-box .material-icons {
+  color: #ff9800;
+}
+
+/* Error messages */
+.error-message, .field_with_errors label {
+  color: #ff6b6b;
+}
+
+/* Success messages */
+.success-message {
+  color: #00e5a0;
+}
+
+/* Info messages */
+.info-message {
+  color: #82b1ff;
+}
+
+/* Code blocks */
+pre, code {
+  background: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-on-surface);
+  border-color: var(--md-sys-color-outline-variant);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  background: var(--md-sys-color-surface-container-low);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-on-surface-variant);
+}
+
+/* Accessibility: High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --md-sys-color-outline: #ffffff;
+    --md-sys-color-on-surface: #ffffff;
+    --md-sys-color-on-background: #ffffff;
+  }
+}

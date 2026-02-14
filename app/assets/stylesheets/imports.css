@@ -1,0 +1,423 @@
+/* ========================================================================
+   IMPORTS PAGE — Filter bar, info banners, progress, results
+   ======================================================================== */
+
+/* --- Filter Bar (horizontal selector layout) --- */
+.import-filter-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.import-filter-bar .filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  flex: 1;
+}
+
+.import-filter-bar .filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding-bottom: 1px;
+}
+
+/* --- Section Spacing --- */
+.import-section {
+  margin-top: 32px;
+}
+
+/* --- Small Button Variant --- */
+.btn-sm {
+  font-size: 13px;
+  padding: 6px 12px;
+  min-height: 32px;
+}
+
+.btn-sm .material-icons {
+  font-size: 16px;
+}
+
+/* --- Info Banner --- */
+.import-info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--md-sys-color-secondary-container);
+  border-radius: 8px;
+}
+
+.import-info-banner .material-icons {
+  color: var(--md-sys-color-secondary);
+  flex-shrink: 0;
+}
+
+/* --- Disabled select styling --- */
+.import-filter-bar .styled-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.import-filter-bar .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* --- Account Bar --- */
+.import-account-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background-color: var(--md-sys-color-surface-variant);
+  border-radius: 12px;
+}
+
+.import-account-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.import-account-icon {
+  font-size: 18px;
+  color: var(--md-sys-color-primary);
+}
+
+.import-account-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.import-account-bar-error {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+
+/* --- Badge --- */
+.import-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.import-badge-success {
+  background-color: var(--md-sys-color-success-container);
+  color: var(--md-sys-color-on-success-container);
+}
+
+.import-badge-error {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+
+/* --- Fixed Bottom Progress Bar (global) --- */
+#import-progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 260px;
+  right: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+#import-progress-bar:empty {
+  display: none;
+}
+
+.import-bar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  background: var(--md-sys-color-surface-container-high);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  font-size: 14px;
+}
+
+.import-bar > .material-icons {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.import-bar-text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--md-sys-color-on-surface);
+}
+
+.import-bar-progress {
+  width: 160px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: var(--md-sys-color-surface);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.import-bar-progress-indeterminate {
+  height: 100%;
+  width: 40%;
+  background-color: var(--md-sys-color-primary);
+  border-radius: 2px;
+  animation: indeterminate 1.5s ease-in-out infinite;
+}
+
+.import-bar-progress-determinate {
+  height: 100%;
+  background-color: var(--md-sys-color-primary);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.import-bar-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* --- Bar color variants --- */
+.import-bar-active > .material-icons {
+  color: var(--md-sys-color-primary);
+}
+
+.import-bar-success {
+  background: var(--md-sys-color-success-container, #d1fae5);
+  color: var(--md-sys-color-on-success-container, #065f46);
+}
+
+.import-bar-success > .material-icons {
+  color: var(--md-sys-color-success, #059669);
+}
+
+.import-bar-warning {
+  background: var(--md-sys-color-warning-container, #fef3c7);
+  color: var(--md-sys-color-on-warning-container, #92400e);
+}
+
+.import-bar-warning > .material-icons {
+  color: var(--md-sys-color-warning, #d97706);
+}
+
+.import-bar-error {
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+
+.import-bar-error > .material-icons {
+  color: var(--md-sys-color-error);
+}
+
+/* --- Slide animations --- */
+.import-bar-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.import-bar-slide-down {
+  animation: slideDown 0.3s ease-in forwards;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+
+/* --- Imports Page Layout Helpers --- */
+.import-description {
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 0 0 16px 0;
+}
+
+.import-connected-area {
+  margin-top: 24px;
+}
+
+.import-hidden-form {
+  display: none;
+}
+
+.import-recent-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.import-recent-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.import-recent-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.import-recent-meta {
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 4px 0 0 0;
+  font-size: 14px;
+}
+
+.import-management-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.import-management-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.import-management-desc {
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 4px 0 0 0;
+  font-size: 14px;
+}
+
+.btn-danger-outline {
+  color: var(--md-sys-color-error);
+  border-color: var(--md-sys-color-error);
+}
+
+.import-how-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.import-how-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.import-how-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.import-how-desc {
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 8px 0 0 0;
+  font-size: 14px;
+}
+
+.import-section-title {
+  margin-bottom: 16px;
+}
+
+.import-error-icon {
+  color: var(--md-sys-color-error);
+}
+
+.import-success-icon {
+  color: var(--md-sys-color-success);
+}
+
+/* --- How It Works Steps --- */
+.import-step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(0, 229, 160, 0.1);
+  color: var(--md-sys-color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* --- Disconnect state --- */
+.import-disconnected {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.import-disconnected .material-icons {
+  font-size: 48px;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.import-disconnected p {
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 20px;
+}
+
+/* --- Animations --- */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  #import-progress-bar {
+    left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .import-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .import-filter-bar .filter-group {
+    min-width: 100%;
+  }
+
+  .import-filter-bar .filter-actions {
+    justify-content: stretch;
+  }
+
+  .import-filter-bar .filter-actions .btn {
+    flex: 1;
+  }
+
+  .import-bar {
+    padding: 8px 16px;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .import-bar-progress {
+    display: none;
+  }
+}
