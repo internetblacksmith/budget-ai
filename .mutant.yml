@@ -1,0 +1,25 @@
+# Mutant configuration for Budget AI
+---
+integration:
+  name: rspec
+includes:
+  - app/models
+  - app/services
+  - app/jobs
+  - lib
+requires:
+  - ./config/environment
+matcher:
+  subjects:
+    - EmmaSpreadsheetImportService*
+    - GoogleDriveService*
+    - Transaction*
+    - Account*
+    - ImportJob*
+    - EmmaSpreadsheetImportJob*
+mutation:
+  timeout: 30.0
+coverage_criteria:
+  process_abort: false
+  test_result: true
+  timeout: false

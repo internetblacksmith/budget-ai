@@ -1,0 +1,86 @@
+# GitHub Pages Configuration for Budget AI Documentation
+
+# Site settings
+title: Budget AI Documentation
+description: >-
+  Comprehensive documentation for Budget AI - A privacy-focused personal finance 
+  management system with AI-powered insights and multi-bank integration.
+baseurl: "/budget-ai" # the subpath of your site, e.g. /blog
+url: "https://your-org.github.io" # your GitHub Pages URL
+
+# Build settings
+theme: jekyll-theme-minimal
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Navigation
+navigation:
+  - title: Home
+    url: /
+  - title: Getting Started
+    url: /getting-started
+  - title: Installation
+    url: /installation
+  - title: Configuration
+    url: /configuration
+  - title: Features
+    url: /features/
+  - title: API Reference
+    url: /api/
+  - title: Contributing
+    url: /contributing
+
+# Collections for organized documentation
+collections:
+  features:
+    output: true
+    permalink: /features/:name
+  api:
+    output: true
+    permalink: /api/:name
+  banks:
+    output: true
+    permalink: /banks/:name
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+  - scope:
+      path: "features"
+    values:
+      layout: "feature"
+  - scope:
+      path: "api"
+    values:
+      layout: "api"
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+
+# Markdown processing
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+
+# SEO
+author: Budget AI Contributors
+twitter:
+  card: summary
+
+# Analytics (optional - add your ID)
+google_analytics: UA-XXXXXXXXX-X

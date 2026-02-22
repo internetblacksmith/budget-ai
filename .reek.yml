@@ -1,0 +1,46 @@
+# Reek configuration for Budget AI
+---
+detectors:
+  IrresponsibleModule:
+    enabled: false  # Rails modules often don't need documentation
+  
+  UtilityFunction:
+    enabled: false  # Rails helpers are often utility functions
+  
+  TooManyStatements:
+    max_statements: 10
+    exclude:
+      - initialize
+      - perform  # Background jobs can be complex
+  
+  TooManyInstanceVariables:
+    max_instance_variables: 8  # Controllers often need multiple instance vars
+  
+  DuplicateMethodCall:
+    max_calls: 3
+  
+  FeatureEnvy:
+    exclude:
+      - EmmaSpreadsheetImportService  # Needs to access Transaction model heavily
+  
+  DataClump:
+    max_copies: 3
+    min_clump_size: 3
+
+exclude_paths:
+  - db/migrate
+  - spec
+  - test
+  - config
+  - vendor
+
+directories:
+  "app/controllers":
+    IrresponsibleModule:
+      enabled: false
+    InstanceVariableAssumption:
+      enabled: false
+  
+  "app/jobs":
+    TooManyStatements:
+      max_statements: 15  # Jobs can be more complex
