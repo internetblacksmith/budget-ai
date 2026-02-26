@@ -32,7 +32,7 @@ class QueryTransactionsTool < MCP::Tool
       when "expense" then scope = scope.expenses
       end
 
-      scope = scope.where("description LIKE ?", "%#{params[:search]}%") if params[:search].present?
+      scope = scope.where("description LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(params[:search])}%") if params[:search].present?
 
       limit = (params[:limit] || 50).to_i.clamp(1, 500)
       transactions = scope.order(date: :desc).limit(limit)

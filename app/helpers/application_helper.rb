@@ -34,12 +34,6 @@ module ApplicationHelper
     descriptions[pattern_type.to_sym] || "Analyze spending pattern"
   end
 
-  def currency_amount(amount)
-    amount ||= 0
-    formatted_amount = "%.2f" % amount.to_f.round(2)
-    "£#{formatted_amount}"
-  end
-
   CATEGORY_ICONS = {
     "Bills" => "receipt", "Transport" => "directions_car", "Groceries" => "shopping_cart",
     "Eating out" => "restaurant", "Entertainment" => "movie", "Shopping" => "shopping_bag",

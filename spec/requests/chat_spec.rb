@@ -29,7 +29,7 @@ RSpec.describe "Chat", type: :request do
 
   describe "POST /chat" do
     before do
-      allow_any_instance_of(ChatService).to receive(:process_message)
+      allow_any_instance_of(LlmService).to receive(:chat)
         .and_return("Based on your data, you spent £200 on groceries.")
     end
 
@@ -52,7 +52,7 @@ RSpec.describe "Chat", type: :request do
 
     context "when LLM fails" do
       before do
-        allow_any_instance_of(ChatService).to receive(:process_message)
+        allow_any_instance_of(LlmService).to receive(:chat)
           .and_raise(LlmClient::ConnectionError, "Cannot connect")
       end
 

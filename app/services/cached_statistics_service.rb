@@ -1,32 +1,18 @@
 class CachedStatisticsService
   CACHE_TTL = 1.hour
 
-  def initialize(user = nil)
-    @user = user
-  end
-
   def get_account_statistics
-    cache_key = cache_key_for(:account_statistics)
+    cache_key = "statistics:account_statistics"
     Rails.cache.fetch(cache_key, expires_in: CACHE_TTL) do
       calculate_account_statistics
     end
   end
 
   def invalidate_all!
-    invalidate!(:account_statistics)
-  end
-
-  def invalidate!(cache_type)
-    cache_key = cache_key_for(cache_type)
-    Rails.cache.delete(cache_key)
+    Rails.cache.delete("statistics:account_statistics")
   end
 
   private
-
-  def cache_key_for(cache_type)
-    user_id = @user&.id || "single"
-    "user:#{user_id}:statistics:#{cache_type}"
-  end
 
   def calculate_account_statistics
     accounts = Account.all.index_by(&:name)
@@ -60,9 +46,9 @@ class CachedStatisticsService
       stats[:transaction_count] = count
     end
 
-    account_stats.each do |account_name, stats|
+    account_stats.each do |_account_name, stats|
       stats[:net_change] = stats[:income] - stats[:expenses]
-      account = accounts[account_name]
+      account = accounts[stats[:name]]
       stats[:current_balance] = account.current_balance
     end
 

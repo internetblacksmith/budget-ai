@@ -77,7 +77,7 @@ class InsightsController < ApplicationController
     when "spending_analysis"
       period = params[:period] || "last_month"
       account = params[:account]
-      transactions = filtered_transactions(period, account)
+      transactions = Transaction.for_period(period, account: account)
       llm_service.stream_analyze_spending(transactions, period: period, account: account) do |token|
         response.stream.write(token)
       end
@@ -99,7 +99,7 @@ class InsightsController < ApplicationController
         return
       end
       period = params[:period] || "last_month"
-      transactions = filtered_transactions(period)
+      transactions = Transaction.for_period(period)
       llm_service.stream_explain_pattern(transactions, pattern_type) do |token|
         response.stream.write(token)
       end
@@ -125,28 +125,6 @@ class InsightsController < ApplicationController
     rescue StandardError => e
       Rails.logger.error { "Failed to initialize LLM service: #{e.message}" }
       nil
-    end
-  end
-
-  def filtered_transactions(period, account = nil)
-    transactions = Transaction.all
-    transactions = transactions.where(account: account) if account.present?
-
-    case period
-    when "today"
-      transactions.where(date: Date.current)
-    when "this_week"
-      transactions.where(date: Date.current.beginning_of_week..)
-    when "last_week"
-      transactions.where(date: 1.week.ago.beginning_of_week..1.week.ago.end_of_week)
-    when "this_month"
-      transactions.where(date: Date.current.beginning_of_month..)
-    when "last_month"
-      transactions.where(date: 1.month.ago.beginning_of_month.beginning_of_day..1.month.ago.end_of_month.end_of_day)
-    when "last_3_months"
-      transactions.where(date: 3.months.ago..)
-    else
-      transactions.where(date: 1.month.ago..)
     end
   end
 end

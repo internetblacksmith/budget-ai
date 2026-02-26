@@ -4,12 +4,10 @@ class InitialSchema < ActiveRecord::Migration[8.1]
   def change
     create_table "accounts", force: :cascade do |t|
       t.datetime "created_at", null: false
-      t.text "encrypted_name"
       t.datetime "last_balance_update"
       t.string "name"
       t.datetime "updated_at", null: false
       t.index [ "name" ], name: "index_accounts_on_name", unique: true
-      t.index [ "name" ], name: "index_accounts_on_user_id_and_name"
     end
 
     create_table "budgets", force: :cascade do |t|
@@ -31,24 +29,6 @@ class InitialSchema < ActiveRecord::Migration[8.1]
       t.index [ "created_at" ], name: "index_chat_messages_on_created_at"
     end
 
-    create_table "data_gaps", force: :cascade do |t|
-      t.string "account", null: false
-      t.decimal "actual_balance", precision: 10, scale: 2
-      t.datetime "created_at", null: false
-      t.text "description"
-      t.decimal "expected_balance", precision: 10, scale: 2
-      t.datetime "gap_end", null: false
-      t.datetime "gap_start", null: false
-      t.boolean "resolved", default: false, null: false
-      t.string "source", null: false
-      t.datetime "updated_at", null: false
-      t.index [ "account", "source", "gap_start" ], name: "index_data_gaps_on_account_and_source_and_gap_start", unique: true
-      t.index [ "account" ], name: "index_data_gaps_on_account"
-      t.index [ "resolved" ], name: "index_data_gaps_on_resolved"
-      t.index [ "source", "resolved" ], name: "index_data_gaps_on_source_and_resolved"
-      t.index [ "source" ], name: "index_data_gaps_on_source"
-    end
-
     create_table "import_jobs", force: :cascade do |t|
       t.datetime "completed_at"
       t.datetime "created_at", null: false
@@ -65,21 +45,8 @@ class InitialSchema < ActiveRecord::Migration[8.1]
       t.integer "total_count"
       t.integer "total_files"
       t.datetime "updated_at", null: false
-      t.index [ "created_at" ], name: "index_import_jobs_on_user_id_and_created_at"
-      t.index [ "status" ], name: "index_import_jobs_on_user_id_and_status"
-    end
-
-    create_table "import_notifications", force: :cascade do |t|
-      t.datetime "created_at", null: false
-      t.integer "import_job_id", null: false
-      t.json "notification_data", default: {}, null: false
-      t.string "notification_type", default: "failure", null: false
-      t.datetime "read_at"
-      t.datetime "updated_at", null: false
-      t.index [ "import_job_id", "notification_type" ], name: "idx_unique_import_notification", unique: true
-      t.index [ "import_job_id" ], name: "index_import_notifications_on_import_job_id"
-      t.index [ "notification_type", "created_at" ], name: "index_import_notifications_on_notification_type_and_created_at"
-      t.index [ "read_at" ], name: "index_import_notifications_on_user_id_and_read_at"
+      t.index [ "created_at" ], name: "index_import_jobs_on_created_at"
+      t.index [ "status" ], name: "index_import_jobs_on_status"
     end
 
     create_table "solid_queue_blocked_executions", force: :cascade do |t|
@@ -208,7 +175,7 @@ class InitialSchema < ActiveRecord::Migration[8.1]
       t.string "account_name"
       t.string "account_number"
       t.text "additional_details"
-      t.decimal "amount", precision: 10, scale: 2
+      t.decimal "amount", precision: 10, scale: 2, null: false
       t.decimal "balance", precision: 10, scale: 2
       t.string "bank"
       t.string "category"
@@ -216,12 +183,9 @@ class InitialSchema < ActiveRecord::Migration[8.1]
       t.datetime "created_at", null: false
       t.string "currency"
       t.string "custom_name"
-      t.datetime "date"
+      t.datetime "date", null: false
       t.string "description"
       t.string "emma_category"
-      t.text "encrypted_description"
-      t.text "encrypted_metadata"
-      t.text "encrypted_notes"
       t.boolean "is_transfer", default: false, null: false
       t.string "linked_transaction_id"
       t.string "merchant"
@@ -235,15 +199,11 @@ class InitialSchema < ActiveRecord::Migration[8.1]
       t.string "transaction_type"
       t.datetime "updated_at", null: false
       t.index [ "account" ], name: "index_transactions_on_account"
-      t.index [ "account" ], name: "index_transactions_on_user_id_and_account"
       t.index [ "date" ], name: "index_transactions_on_date"
-      t.index [ "date" ], name: "index_transactions_on_user_id_and_date"
       t.index [ "is_transfer" ], name: "index_transactions_on_is_transfer"
-      t.index [ "is_transfer" ], name: "index_transactions_on_user_id_and_is_transfer"
       t.index [ "transaction_id", "source" ], name: "index_transactions_on_transaction_id_and_source", unique: true
     end
 
-    add_foreign_key "import_notifications", "import_jobs"
     add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
     add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
     add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

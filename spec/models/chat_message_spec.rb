@@ -31,12 +31,12 @@ RSpec.describe ChatMessage, type: :model do
     end
   end
 
-  describe 'default scope' do
+  describe '.chronological' do
     it 'orders by created_at ascending' do
       old_message = create(:chat_message, content: "first", created_at: 1.hour.ago)
       new_message = create(:chat_message, content: "second", created_at: Time.current)
 
-      expect(ChatMessage.all.to_a).to eq([ old_message, new_message ])
+      expect(ChatMessage.chronological.to_a).to eq([ old_message, new_message ])
     end
   end
 end

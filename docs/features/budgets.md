@@ -35,7 +35,7 @@ Click the delete icon on any budget card. You'll be asked to confirm.
 
 ## How Spending Is Calculated
 
-- Only **expense** transactions (negative amounts) in the **current month** are counted
+- Only **expense** transactions (negative amounts, excluding transfers) in the **current month** are counted
 - Transactions must match the budget's **category** exactly
 - Income transactions in the same category are excluded
 

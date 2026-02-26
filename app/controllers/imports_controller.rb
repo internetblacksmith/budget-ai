@@ -65,8 +65,16 @@ class ImportsController < ApplicationController
   end
 
   def reset_database
+    unless params[:confirm] == "DELETE ALL DATA"
+      redirect_to imports_path, alert: "Confirmation required to reset database."
+      return
+    end
+
+    TransactionEdit.delete_all
     Transaction.delete_all
+    ChatMessage.delete_all
     ImportJob.delete_all
+    Account.delete_all
     CachedStatisticsService.new.invalidate_all!
 
     redirect_to imports_path, notice: "All transactions and import history have been cleared."

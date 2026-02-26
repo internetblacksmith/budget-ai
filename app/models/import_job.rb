@@ -1,6 +1,4 @@
 class ImportJob < ApplicationRecord
-  has_many :import_notifications, dependent: :destroy
-
   enum :status, {
     pending: "pending",
     processing: "processing",

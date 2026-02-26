@@ -151,6 +151,88 @@ RSpec.describe Transaction, type: :model do
     end
   end
 
+  describe '.for_period' do
+    let!(:today_txn) { create(:transaction, date: Date.current) }
+    let!(:last_week_txn) { create(:transaction, date: 1.week.ago.beginning_of_week + 1.day) }
+    let!(:last_month_txn) { create(:transaction, date: 1.month.ago.beginning_of_month + 5.days) }
+    let!(:old_txn) { create(:transaction, date: 6.months.ago) }
+
+    it 'returns today transactions' do
+      expect(Transaction.for_period("today")).to include(today_txn)
+      expect(Transaction.for_period("today")).not_to include(last_month_txn)
+    end
+
+    it 'returns last_month transactions' do
+      result = Transaction.for_period("last_month")
+      expect(result).to include(last_month_txn)
+      expect(result).not_to include(old_txn)
+    end
+
+    it 'returns last_3_months transactions' do
+      result = Transaction.for_period("last_3_months")
+      expect(result).to include(today_txn, last_month_txn)
+      expect(result).not_to include(old_txn)
+    end
+
+    it 'filters by account when provided' do
+      acct_txn = create(:transaction, date: Date.current, account: "savings")
+      result = Transaction.for_period("today", account: "savings")
+      expect(result).to include(acct_txn)
+      expect(result).not_to include(today_txn)
+    end
+
+    it 'defaults to last month when period is unknown' do
+      result = Transaction.for_period("unknown_period")
+      expect(result).to include(today_txn)
+      expect(result).not_to include(old_txn)
+    end
+  end
+
+  describe '.financial_context' do
+    before do
+      create(:transaction, category: "Groceries", amount: -50, date: Date.current)
+      create(:transaction, category: "Income", amount: 2000, date: Date.current)
+    end
+
+    it 'returns a hash with expected keys' do
+      context = Transaction.financial_context
+      expect(context).to include(
+        :transaction_count,
+        :date_range,
+        :monthly_breakdown,
+        :category_spending_by_month,
+        :budgets,
+        :totals,
+        :recurring_transactions
+      )
+    end
+
+    it 'includes correct transaction count' do
+      context = Transaction.financial_context
+      expect(context[:transaction_count]).to eq(2)
+    end
+
+    it 'includes date range' do
+      context = Transaction.financial_context
+      expect(context[:date_range][:earliest]).to eq(Date.current)
+      expect(context[:date_range][:latest]).to eq(Date.current)
+    end
+
+    it 'includes monthly breakdown' do
+      context = Transaction.financial_context
+      expect(context[:monthly_breakdown]).to be_an(Array)
+      expect(context[:monthly_breakdown].first[:month]).to eq(Date.current.strftime("%B %Y"))
+    end
+
+    it 'includes totals with averages' do
+      context = Transaction.financial_context
+      totals = context[:totals]
+      expect(totals[:total_income]).to eq(2000.0)
+      expect(totals[:total_expenses]).to eq(50.0)
+      expect(totals[:months_of_data]).to be >= 1
+    end
+  end
+
   describe 'bank-specific fields' do
     it 'stores bank-specific data' do
       transaction = create(:transaction,

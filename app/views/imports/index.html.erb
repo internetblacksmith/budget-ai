@@ -176,6 +176,7 @@
     <%= button_to "Reset Database",
           reset_database_imports_path,
           method: :delete,
+          params: { confirm: "DELETE ALL DATA" },
           class: "btn btn-outline btn-danger-outline",
           data: { turbo_confirm: "This will permanently delete ALL transactions and import history. Continue?" } %>
   </div>

@@ -1,4 +1,6 @@
 class TransactionsController < ApplicationController
+  before_action :set_transaction, only: %i[show edit update destroy]
+
   def index
     @transactions = Transaction.all
 
@@ -27,9 +29,7 @@ class TransactionsController < ApplicationController
     end
   end
 
-  def show
-    @transaction = Transaction.find(params[:id])
-  end
+  def show; end
 
   def new
     @transaction = Transaction.new(date: Date.current)
@@ -50,13 +50,10 @@ class TransactionsController < ApplicationController
   end
 
   def edit
-    @transaction = Transaction.find(params[:id])
     @accounts = Account.pluck(:name).sort
   end
 
   def update
-    @transaction = Transaction.find(params[:id])
-
     if @transaction.update(transaction_params)
       TransactionEdit.record_edit(@transaction, transaction_params.to_h.symbolize_keys)
       redirect_to transaction_path(@transaction), notice: "Transaction was successfully updated."
@@ -67,7 +64,6 @@ class TransactionsController < ApplicationController
   end
 
   def destroy
-    @transaction = Transaction.find(params[:id])
     @transaction.destroy
     redirect_to transactions_path, notice: "Transaction was successfully deleted."
   end
@@ -114,6 +110,10 @@ class TransactionsController < ApplicationController
 
   private
 
+  def set_transaction
+    @transaction = Transaction.find(params[:id])
+  end
+
   def transaction_params
     params.require(:transaction).permit(:date, :description, :amount, :category, :account, :notes, :is_transfer)
   end
@@ -149,7 +149,10 @@ class TransactionsController < ApplicationController
   def apply_search_filter
     return unless params[:search].present?
 
-    @transactions = @transactions.where("description LIKE ?", "%#{params[:search]}%")
+    @transactions = @transactions.where(
+      "description LIKE ?",
+      "%#{ActiveRecord::Base.sanitize_sql_like(params[:search])}%"
+    )
   end
 
   def apply_amount_filter

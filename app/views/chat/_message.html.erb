@@ -4,7 +4,7 @@
   </div>
   <div class="message-bubble">
     <% if message.role == "assistant" %>
-      <div class="message-content analysis-content" data-controller="markdown" data-markdown-raw-value="<%= message.content %>"><%= simple_format(message.content) %></div>
+      <div class="message-content analysis-content" data-controller="markdown" data-markdown-raw-value="<%= message.content %>"></div>
     <% else %>
       <div class="message-content"><%= simple_format(message.content) %></div>
     <% end %>

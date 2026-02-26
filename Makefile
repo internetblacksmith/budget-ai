@@ -98,7 +98,7 @@ help:
 	@echo "  make emma-status  - Show recent import status"
 	@echo ""
 	@echo "🧪 TESTING & QUALITY:"
-	@echo "  make test         - Run all tests (RSpec + Cucumber)"
+	@echo "  make test         - Run all tests (RSpec)"
 	@echo "  make lint         - Run Rubocop linter"
 	@echo "  make fix          - Auto-fix Rubocop violations"
 	@echo "  make commit-check - Pre-commit check (tests + lint)"
@@ -188,7 +188,6 @@ console:
 test:
 	@echo "🧪 Running all tests..."
 	@bundle exec rspec
-	@bundle exec cucumber
 
 .PHONY: lint
 lint:

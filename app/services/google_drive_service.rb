@@ -6,11 +6,6 @@ class GoogleDriveService
   class Error < StandardError; end
   class AuthenticationError < Error; end
 
-  SCOPES = [
-    Google::Apis::SheetsV4::AUTH_SPREADSHEETS_READONLY,
-    Google::Apis::DriveV3::AUTH_DRIVE_READONLY
-  ].freeze
-
   def initialize(oauth_tokens = nil)
     @oauth_tokens = oauth_tokens
   end
@@ -43,52 +38,6 @@ class GoogleDriveService
       end
     rescue Google::Apis::Error => e
       raise Error, "Failed to list spreadsheets: #{e.message}"
-    end
-  end
-
-  def get_account_info
-    begin
-      authorize
-      # If using OAuth2, get user info from the API
-      if @oauth_tokens && @oauth_tokens[:user_email]
-        {
-          email: @oauth_tokens[:user_email],
-          name: @oauth_tokens[:user_name] || "Google User",
-          type: "oauth2"
-        }
-      elsif @authorization.is_a?(Signet::OAuth2::Client)
-        # Try to get user info from Drive API
-        drive_service = Google::Apis::DriveV3::DriveService.new
-        drive_service.authorization = @authorization
-
-        about = drive_service.get_about(fields: "user")
-        {
-          email: about.user.email_address,
-          name: about.user.display_name,
-          type: "oauth2"
-        }
-      elsif File.exist?(@credentials_path)
-        # Using service account
-        credentials_data = JSON.parse(File.read(@credentials_path))
-        {
-          email: credentials_data["client_email"],
-          name: "Service Account",
-          type: "service_account"
-        }
-      else
-        {
-          email: "unknown@example.com",
-          name: "Unknown Account",
-          type: "unknown"
-         }
-      end
-     rescue StandardError => e
-       Rails.logger.error { "Failed to get account info: #{e.message}" }
-       {
-        email: "error@example.com",
-        name: "Error loading account",
-        type: "error"
-      }
     end
   end
 
@@ -132,7 +81,8 @@ class GoogleDriveService
     begin
       # Use provided sheet name or default to first sheet
       # Emma exports have many columns (ID through Linked transaction ID = 16 columns A:P)
-      range = sheet_name ? "'#{sheet_name}'!A:Q" : "A:Q"
+      sanitized_name = sheet_name&.gsub("'", "''")
+      range = sanitized_name ? "'#{sanitized_name}'!A:Q" : "A:Q"
 
       response = service.get_spreadsheet_values(spreadsheet_id, range)
 

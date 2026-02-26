@@ -129,6 +129,49 @@ RSpec.describe LlmService do
     end
   end
 
+  describe "#chat" do
+    before do
+      allow_any_instance_of(LlmClient).to receive(:generate)
+        .and_return("Here is my analysis of your spending.")
+    end
+
+    it "returns LLM response" do
+      response = service.chat("Analyze my spending")
+      expect(response).to eq("Here is my analysis of your spending.")
+    end
+
+    it "includes financial context in prompt" do
+      create(:transaction, category: "Groceries", amount: -50, date: Date.current)
+
+      expect_any_instance_of(LlmClient).to receive(:generate) do |_, prompt|
+        expect(prompt).to include("MONTHLY BREAKDOWN")
+        expect(prompt).to include("USER MESSAGE")
+        expect(prompt).to include("How am I doing?")
+        "Response"
+      end
+
+      service.chat("How am I doing?")
+    end
+
+    it "includes budget information" do
+      create(:budget, category: "Bills", monthly_limit: 500)
+
+      expect_any_instance_of(LlmClient).to receive(:generate) do |_, prompt|
+        expect(prompt).to include("BUDGETS")
+        expect(prompt).to include("Bills")
+        expect(prompt).to include("500.0")
+        "Response"
+      end
+
+      service.chat("What are my budgets?")
+    end
+
+    it "works with no transactions or budgets" do
+      response = service.chat("Hello")
+      expect(response).to be_a(String)
+    end
+  end
+
   describe "error handling" do
     describe "when LlmClient raises ConnectionError" do
       it "propagates ConnectionError" do

@@ -53,16 +53,26 @@ RSpec.describe "Imports", type: :request do
   end
 
   describe "DELETE /imports/reset_database" do
-    it "deletes all transactions and import jobs and redirects" do
+    it "deletes all data when confirmation is provided" do
       create(:transaction)
       create(:import_job, :completed)
 
-      expect { delete reset_database_imports_path }.to change(Transaction, :count).to(0)
+      expect { delete reset_database_imports_path, params: { confirm: "DELETE ALL DATA" } }.to change(Transaction, :count).to(0)
         .and change(ImportJob, :count).to(0)
 
       expect(response).to redirect_to(imports_path)
       follow_redirect!
       expect(response.body).to include("All transactions and import history have been cleared")
+    end
+
+    it "rejects reset without confirmation" do
+      create(:transaction)
+
+      expect { delete reset_database_imports_path }.not_to change(Transaction, :count)
+
+      expect(response).to redirect_to(imports_path)
+      follow_redirect!
+      expect(response.body).to include("Confirmation required")
     end
   end
 

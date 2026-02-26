@@ -53,9 +53,6 @@ RSpec.configure do |config|
   # Include FactoryBot methods
   config.include FactoryBot::Syntax::Methods
 
-  # Include authentication test helpers
-  # Test helpers are defined in spec/support/authentication_helpers.rb
-
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
     Rails.root.join('spec/fixtures')
@@ -76,7 +73,6 @@ RSpec.configure do |config|
     Account.destroy_all
     Transaction.destroy_all
     ImportJob.destroy_all
-    DataGap.destroy_all if defined?(DataGap)
   end
 
   config.after(:each) do

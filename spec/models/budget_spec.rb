@@ -36,6 +36,30 @@ RSpec.describe Budget, type: :model do
     end
   end
 
+  describe '.status_summary' do
+    it 'returns budget status for all budgets' do
+      create(:budget, category: "Groceries", monthly_limit: 200)
+      create(:budget, category: "Bills", monthly_limit: 500)
+      create(:transaction, category: "Groceries", amount: -75, date: Date.current)
+
+      summary = Budget.status_summary
+      expect(summary.length).to eq(2)
+
+      bills = summary.find { |b| b[:category] == "Bills" }
+      expect(bills[:monthly_limit]).to eq(500.0)
+      expect(bills[:spent_this_month]).to eq(0.0)
+      expect(bills[:over_budget]).to be false
+
+      groceries = summary.find { |b| b[:category] == "Groceries" }
+      expect(groceries[:spent_this_month]).to eq(75.0)
+      expect(groceries[:remaining]).to eq(125.0)
+    end
+
+    it 'returns empty array when no budgets exist' do
+      expect(Budget.status_summary).to eq([])
+    end
+  end
+
   describe '#spent_this_month' do
     let(:budget) { create(:budget, category: "Groceries", monthly_limit: 200) }
 

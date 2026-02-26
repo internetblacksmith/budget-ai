@@ -6,7 +6,8 @@ Personal finance app that imports transactions from Emma budget app via Google S
 
 - **Import**: Connect Google Drive, select your Emma spreadsheet, import all transactions
 - **View**: Browse and filter transactions by account, type, search
-- **Analyze**: AI-powered insights using Ollama (local LLM)
+- **Chat**: Ask questions about your finances via AI chat at `/chat`
+- **Analyze**: AI-powered insights using Ollama (local LLM) at `/insights`
 
 ## Setup
 
@@ -30,7 +31,7 @@ make worker
 2. Connect Google account
 3. Select Emma spreadsheet → Select sheet → Import
 4. View transactions at /transactions
-5. Get AI insights at /insights
+5. Chat with the AI at /chat or get insights at /insights
 
 ## Tech Stack
 

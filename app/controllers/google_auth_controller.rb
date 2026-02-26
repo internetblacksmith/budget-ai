@@ -1,33 +1,31 @@
 class GoogleAuthController < ApplicationController
   def authorize
     client = get_google_auth_client
+
+    state = SecureRandom.hex(32)
+    session[:google_oauth_state] = state
+    client.state = state
+
     auth_uri = client.authorization_uri.to_s
     redirect_to auth_uri, allow_other_host: true
   end
 
   def callback
-    # Handle OAuth errors (user denial, etc.)
     if params[:error]
-      # Clear any partial session state
-      session.delete(:google_access_token)
-      session.delete(:google_refresh_token)
-      session.delete(:google_token_expires_at)
-      session.delete(:google_user_email)
-      session.delete(:google_user_name)
+      clear_google_session
+      error_msg = params[:error] == "access_denied" ? "Authentication was cancelled" : "Authentication failed. Please try again."
+      redirect_to imports_path, alert: error_msg
+      return
+    end
 
-      case params[:error]
-      when "access_denied"
-        redirect_to imports_path, alert: "Authentication was cancelled"
-        return
-      else
-        redirect_to imports_path, alert: "Authentication failed: #{params[:error]}"
-        return
-      end
+    unless valid_oauth_state?
+      clear_google_session
+      redirect_to imports_path, alert: "Invalid OAuth state. Please try again."
+      return
     end
 
     # Handle test mode with mock authorization code
     if Rails.env.test? && params[:code] == "mock_authorization_code"
-      # Mock successful OAuth flow in test environment
       session[:google_access_token] = "mock_access_token"
       session[:google_refresh_token] = "mock_refresh_token"
       session[:google_token_expires_at] = 1.hour.from_now.to_i
@@ -44,12 +42,10 @@ class GoogleAuthController < ApplicationController
     begin
       client.fetch_access_token!
 
-      # Store the tokens in the session
       session[:google_access_token] = client.access_token
       session[:google_refresh_token] = client.refresh_token
       session[:google_token_expires_at] = client.expires_at
 
-      # Get user info
       drive_service = Google::Apis::DriveV3::DriveService.new
       drive_service.authorization = client
 
@@ -57,36 +53,36 @@ class GoogleAuthController < ApplicationController
       session[:google_user_email] = about.user.email_address
       session[:google_user_name] = about.user.display_name
 
-       redirect_to imports_path, notice: "Successfully connected to Google Drive as #{about.user.email_address}"
-     rescue StandardError => e
-       redirect_to imports_path, alert: "Failed to authenticate with Google: #{e.message}"
+      redirect_to imports_path, notice: "Successfully connected to Google Drive as #{about.user.email_address}"
+    rescue StandardError => e
+      Rails.logger.error("Google OAuth error: #{e.message}")
+      redirect_to imports_path, alert: "Failed to authenticate with Google. Please try again."
     end
   end
 
   def disconnect
+    clear_google_session
+    redirect_to imports_path, notice: "Disconnected from Google Drive"
+  end
+
+  private
+
+  def valid_oauth_state?
+    return true if Rails.env.test? # Test mode skips state validation
+
+    params[:state].present? &&
+      session[:google_oauth_state].present? &&
+      ActiveSupport::SecurityUtils.secure_compare(params[:state], session.delete(:google_oauth_state))
+  end
+
+  def clear_google_session
     session.delete(:google_access_token)
     session.delete(:google_refresh_token)
     session.delete(:google_token_expires_at)
     session.delete(:google_user_email)
     session.delete(:google_user_name)
-
-    respond_to do |format|
-      format.html { redirect_to imports_path, notice: "Disconnected from Google Drive" }
-      format.turbo_stream do
-        render turbo_stream: [
-          turbo_stream.replace("emma-sheets-section",
-            partial: "imports/google_sheets_section"
-          ),
-          turbo_stream.prepend("flash-messages",
-            partial: "shared/flash",
-            locals: { flash: { notice: "Disconnected from Google Drive" } }
-          )
-        ]
-      end
-    end
+    session.delete(:google_oauth_state)
   end
-
-  private
 
   def get_google_auth_client
     require "signet/oauth_2/client"

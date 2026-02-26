@@ -66,6 +66,15 @@ describe CachedStatisticsService do
       account_names = stats.map { |s| s[:name] }
       expect(account_names).to eq([ "Alpha", "Beta", "Zebra" ])
     end
+
+    it "uses correct cache key" do
+      service.get_account_statistics
+
+      expect(Rails.cache).to have_received(:fetch).with(
+        "statistics:account_statistics",
+        expires_in: 1.hour
+      )
+    end
   end
 
   describe "#invalidate_all!" do
@@ -76,33 +85,7 @@ describe CachedStatisticsService do
       service.get_account_statistics
       service.invalidate_all!
 
-      expect(Rails.cache).to have_received(:delete).at_least(1).times
-    end
-
-    it "invalidates account_statistics cache" do
-      create(:account, name: "Checking")
-
-      service.get_account_statistics
-      service.invalidate!(:account_statistics)
-
-      expect(Rails.cache).to have_received(:delete)
-    end
-  end
-
-  describe "#invalidate!" do
-    it "clears specific cache type" do
-      service.invalidate!(:account_statistics)
-
-      expect(Rails.cache).to have_received(:delete)
-    end
-
-    it "generates correct cache key" do
-      service.get_account_statistics
-
-      expect(Rails.cache).to have_received(:fetch).with(
-        "user:single:statistics:account_statistics",
-        expires_in: 1.hour
-      )
+      expect(Rails.cache).to have_received(:delete).with("statistics:account_statistics")
     end
   end
 

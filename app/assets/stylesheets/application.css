@@ -21,7 +21,5 @@
 @import url('dark-theme.css');
 
 /* Import component-specific styles */
-@import url('onboarding.css');
 @import url('toast.css');
-@import url('user_avatar.css');
 

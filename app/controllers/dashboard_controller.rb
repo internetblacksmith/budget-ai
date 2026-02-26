@@ -2,14 +2,6 @@
 
 class DashboardController < ApplicationController
   DONUT_COLORS = %w[#00e5a0 #ff6b6b #a78bfa #fbbf24 #38bdf8].freeze
-  CATEGORY_ICONS = {
-    "Bills" => "receipt", "Transport" => "directions_car", "Groceries" => "shopping_cart",
-    "Eating out" => "restaurant", "Entertainment" => "movie", "Shopping" => "shopping_bag",
-    "Personal care" => "spa", "General" => "category", "Finances" => "account_balance",
-    "Income" => "payments", "Family" => "family_restroom", "Holidays" => "flight",
-    "Charity" => "volunteer_activism", "Education" => "school"
-  }.freeze
-
   def index
     today = Date.current
     @current_month_label = today.strftime("%B %Y")
@@ -55,7 +47,7 @@ class DashboardController < ApplicationController
       pct = grand_total.positive? ? ((amount / grand_total) * 100).round : 0
       dash = (pct.to_f / 100) * 100
       color = DONUT_COLORS[category_totals.index([ name, amount ]) || 0]
-      icon = CATEGORY_ICONS[name] || "category"
+      icon = helpers.category_icon(name)
 
       entry = { name: name || "Uncategorised", amount: amount, pct: pct,
                 dash: dash, gap: 100 - dash, offset: offset, color: color, icon: icon }

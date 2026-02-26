@@ -20,6 +20,10 @@ When chat is empty, quick action chips are shown:
 - **Top categories** — see where your money goes
 - **Recurring payments** — identify subscriptions and regular charges
 
+### Retrying a Message
+
+Click the retry button on any user message to re-submit it to the AI. All messages from that point onward are deleted and the question is re-sent, producing a fresh response.
+
 ### Clearing Chat
 
 Click the "Clear" button in the header to delete all chat history.
@@ -45,11 +49,11 @@ The chat AI has access to:
 ## Technical Details
 
 - **Model**: `ChatMessage` (`app/models/chat_message.rb`) — stores conversation history
-- **Service**: `ChatService` (`app/services/chat_service.rb`) — builds context and processes messages
+- **Context**: `Transaction.financial_context` — assembles spending data, budgets, and recurring transactions
+- **Service**: `LlmService#chat(message)` — builds prompt with financial context and calls LLM
 - **Controller**: `ChatController` (`app/controllers/chat_controller.rb`)
 - **Stimulus**: `chat_controller.js` — handles form submission, typing indicator, auto-scroll
-- **LLM Integration**: Uses `LlmPromptBuilder#chat_prompt` and `LlmService#chat`
-- **Routes**: `resources :chat, only: [:index, :create]` with `delete :clear` collection route
+- **Routes**: `resources :chat, only: [:index, :create]` with `member { post :retry }` and `collection { delete :clear }` routes
 
 ## Requirements
 

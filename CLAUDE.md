@@ -5,8 +5,8 @@ Rails 8 personal finance app with Emma spreadsheet import, encrypted per-user da
 ## Build Commands
 
 ```bash
-make commit-check   # REQUIRED before any commit (tests + lint + coverage)
-make test           # RSpec + Cucumber
+make commit-check   # REQUIRED before any commit (tests + lint)
+make test           # RSpec
 make lint           # Rubocop (zero violations required)
 ```
 
@@ -22,12 +22,8 @@ make lint           # Rubocop (zero violations required)
 
 | Topic | Guide |
 |-------|-------|
-| Code conventions | [docs/code-style.md](docs/code-style.md) |
-| Testing patterns | [docs/testing.md](docs/testing.md) |
-| Error handling | [docs/error-handling.md](docs/error-handling.md) |
-| Git workflow | [docs/git-workflow.md](docs/git-workflow.md) |
-| Architecture | [docs/architecture.md](docs/architecture.md) |
-| CLI commands | [docs/cli-commands.md](docs/cli-commands.md) |
-| Import notifications | [docs/IMPORT_NOTIFICATIONS.md](docs/IMPORT_NOTIFICATIONS.md) |
+| Emma import | [docs/features/emma-import.md](docs/features/emma-import.md) |
+| Chat / AI | [docs/features/chat.md](docs/features/chat.md) |
+| Budgets | [docs/features/budgets.md](docs/features/budgets.md) |
 | MCP Server | [docs/features/mcp-server.md](docs/features/mcp-server.md) |
 | Persistent edits | [docs/features/persistent-edits.md](docs/features/persistent-edits.md) |
