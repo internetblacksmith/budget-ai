@@ -82,7 +82,7 @@ group :test do
 
   # Code quality
   gem "reek", "6.5.0"
-  gem "debride", "1.15.0"
+  gem "debride", "1.15.1"
 
   # HTTP mocking for tests
   gem "webmock", "3.26.1"
