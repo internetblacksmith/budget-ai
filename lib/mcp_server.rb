@@ -10,7 +10,7 @@
 #
 # Stdout must remain clean JSON-RPC, so redirect all Rails logging to stderr.
 
-require_relative "config/environment"
+require_relative "../config/environment"
 
 Rails.logger = ActiveSupport::Logger.new($stderr)
 ActiveRecord::Base.logger = nil
