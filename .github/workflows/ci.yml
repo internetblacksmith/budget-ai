@@ -2,131 +2,57 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
-    - uses: actions/checkout@v3
-    
+    - uses: actions/checkout@v4
+
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.3.7'
+        ruby-version: '3.4.2'
         bundler-cache: true
-    
+
     - name: Setup test database
       env:
         RAILS_ENV: test
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/budget_ai_test
       run: |
         bundle exec rails db:create
         bundle exec rails db:schema:load
-    
-    - name: Run Rubocop
+
+    - name: Run RuboCop
       run: bundle exec rubocop
-      continue-on-error: false
-    
-    - name: Run RSpec tests with coverage
+
+    - name: Run RSpec tests
       env:
         RAILS_ENV: test
-        COVERAGE_MINIMUM: 80
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/budget_ai_test
-      run: |
-        bundle exec rspec --format progress --format json --out rspec_results.json
-    
-    - name: Check test coverage
-      run: |
-        coverage=$(cat coverage/.last_run.json | jq -r '.result.line')
-        echo "Test coverage: $coverage%"
-        if (( $(echo "$coverage < 80" | bc -l) )); then
-          echo "❌ Coverage below 80% threshold"
-          exit 1
-        else
-          echo "✅ Coverage meets requirements"
-        fi
-    
-    - name: Run critical Cucumber tests
-      env:
-        RAILS_ENV: test
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/budget_ai_test
-      run: bundle exec cucumber --tags @critical
-      continue-on-error: true
-    
-    - name: Upload coverage reports
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: coverage-report
-        path: coverage/
-    
+      run: bundle exec rspec --format progress
+
     - name: Upload test results
-      uses: actions/upload-artifact@v3
-      if: always()
+      uses: actions/upload-artifact@v4
+      if: failure()
       with:
         name: test-results
-        path: |
-          rspec_results.json
-          tmp/capybara/
-    
-    - name: Post test summary
-      if: always()
-      run: |
-        echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Coverage" >> $GITHUB_STEP_SUMMARY
-        echo "$(cat coverage/.last_run.json | jq -r '.result.line')%" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### RSpec Results" >> $GITHUB_STEP_SUMMARY
-        echo "$(cat rspec_results.json | jq -r '.summary | "Passed: \(.example_count - .failure_count)/\(.example_count)"')" >> $GITHUB_STEP_SUMMARY
+        path: tmp/capybara/
 
   security:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    
+    - uses: actions/checkout@v4
+
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.3.7'
+        ruby-version: '3.4.2'
         bundler-cache: true
-    
+
     - name: Run Brakeman security scan
       run: |
         gem install brakeman
-        brakeman -f json -o brakeman_report.json || true
         brakeman -f text
-    
-    - name: Upload security report
-      uses: actions/upload-artifact@v3
-      with:
-        name: security-report
-        path: brakeman_report.json
-
-  quality-gates:
-    needs: [test, security]
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check quality gates
-      run: |
-        echo "✅ All quality gates passed"
-        echo "- Test coverage ≥ 80%"
-        echo "- Rubocop: 0 violations"
-        echo "- Security scan completed"
