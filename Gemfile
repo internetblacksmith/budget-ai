@@ -52,7 +52,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", "1.1.0", require: false
 
   # RSpec for testing
-  gem "rspec-rails", "8.0.2"
+  gem "rspec-rails", "8.0.3"
   gem "factory_bot_rails", "6.5.1"
 
   # Load environment variables from .env files
