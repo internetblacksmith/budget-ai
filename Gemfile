@@ -12,7 +12,7 @@ gem "stimulus-rails", "1.3.4"
 gem "csv", "3.3.5"
 
 # Google Drive integration for Emma spreadsheet import
-gem "google-apis-drive_v3", "0.76.0"
+gem "google-apis-drive_v3", "0.77.0"
 gem "google-apis-sheets_v4", "0.46.0"
 gem "googleauth", "1.16.2"
 gem "signet", "0.21.0"
