@@ -43,7 +43,7 @@ group :development, :test do
   gem "debug", "1.11.1", platforms: %i[ mri windows ], require: "debug/prelude"
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", "7.1.2", require: false
+  gem "brakeman", "8.0.4", require: false
 
   # N+1 query detector [https://github.com/flyerhzm/bullet]
   gem "bullet", "8.1.0", require: false
