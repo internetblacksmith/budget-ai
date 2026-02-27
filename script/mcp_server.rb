@@ -6,7 +6,7 @@
 # the Model Context Protocol (JSON-RPC over stdio).
 #
 # Usage:
-#   bundle exec ruby mcp_server.rb
+#   bundle exec ruby script/mcp_server.rb
 #
 # Stdout must remain clean JSON-RPC, so redirect all Rails logging to stderr.
 

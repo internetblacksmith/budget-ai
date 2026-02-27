@@ -80,7 +80,7 @@ Single-user app. No authentication. All data local.
 - `EmmaSpreadsheetImportService` - parses Emma Google Sheets exports
 - `CachedStatisticsService` - caches transaction stats for dashboard
 - `LlmService` - AI insights via Ollama
-- `lib/mcp_server.rb` - MCP server exposing 17 financial tools
+- `script/mcp_server.rb` - MCP server exposing 17 financial tools
 
 ## Documentation
 

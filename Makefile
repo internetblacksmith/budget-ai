@@ -337,4 +337,4 @@ opencode:
 
 mcp-test:
 	@echo "🧪 Testing MCP server..."
-	@echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}' | bundle exec ruby lib/mcp_server.rb 2>/dev/null | head -1 | ruby -rjson -e 'r = JSON.parse(STDIN.read); puts r["result"] ? "✅ MCP server responding (#{r["result"]["serverInfo"]["name"]})" : "❌ Unexpected response"'
+	@echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}' | bundle exec ruby script/mcp_server.rb 2>/dev/null | head -1 | ruby -rjson -e 'r = JSON.parse(STDIN.read); puts r["result"] ? "✅ MCP server responding (#{r["result"]["serverInfo"]["name"]})" : "❌ Unexpected response"'

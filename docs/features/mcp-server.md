@@ -66,12 +66,12 @@ These tools accept simple integer parameters and return pre-computed results. Th
 make mcp-test
 
 # Manual test
-echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}' | bundle exec ruby lib/mcp_server.rb
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}' | bundle exec ruby script/mcp_server.rb
 ```
 
 ## Architecture
 
-The MCP server (`lib/mcp_server.rb`) boots the Rails environment, loads tool classes from `app/mcp_tools/`, and communicates via JSON-RPC over stdio. Each tool is an `MCP::Tool` subclass that queries or mutates data through the existing Rails models and services.
+The MCP server (`script/mcp_server.rb`) boots the Rails environment, loads tool classes from `app/mcp_tools/`, and communicates via JSON-RPC over stdio. Each tool is an `MCP::Tool` subclass that queries or mutates data through the existing Rails models and services.
 
 ## Troubleshooting
 
