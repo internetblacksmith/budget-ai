@@ -21,7 +21,7 @@ gem "signet", "0.21.0"
 gem "mcp", "0.7.0"
 
 # HTTP client for LLM integration
-gem "faraday", "2.14.0"
+gem "faraday", "2.14.1"
 gem "faraday-retry", "2.4.0"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
