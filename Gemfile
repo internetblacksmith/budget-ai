@@ -18,7 +18,7 @@ gem "googleauth", "1.16.2"
 gem "signet", "0.21.0"
 
 # MCP (Model Context Protocol) server for AI agent tool access
-gem "mcp", "0.7.0"
+gem "mcp", "0.7.1"
 
 # HTTP client for LLM integration
 gem "faraday", "2.14.1"
