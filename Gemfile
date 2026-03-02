@@ -36,7 +36,7 @@ gem "solid_cable", "3.0.12"
 gem "kaminari", "1.2.2"
 
 # Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", "1.21.1", require: false
+gem "bootsnap", "1.23.0", require: false
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
