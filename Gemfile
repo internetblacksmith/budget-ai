@@ -77,7 +77,7 @@ group :test do
   gem "shoulda-matchers", "7.0.1"
 
   # Cucumber for BDD integration testing
-  gem "cucumber-rails", "4.0.0", require: false
+  gem "cucumber-rails", "4.0.1", require: false
   gem "database_cleaner-active_record", "2.2.2"
 
   # Code quality
